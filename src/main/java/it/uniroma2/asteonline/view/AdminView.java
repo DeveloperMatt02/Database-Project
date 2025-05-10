@@ -1,4 +1,301 @@
 package it.uniroma2.asteonline.view;
 
-public class AdminView extends CLIView{
+import it.uniroma2.asteonline.controller.AdminController;
+import it.uniroma2.asteonline.model.domain.Asta;
+import it.uniroma2.asteonline.model.domain.Categoria;
+import it.uniroma2.asteonline.utils.LoggedUser;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+public class AdminView extends CLIView {
+    public static int showMenu() throws IOException {
+        CLIView.showHeader();
+
+        System.out.println("1) Inserisci nuovo articolo e inizializza asta");
+        System.out.println("2) Gestisci aste");
+        System.out.println("3) Gestisci categorie");
+        System.out.println("4) Storico delle aste");
+        System.out.println("5) Visualizza profilo utente");
+        System.out.println("6) Logout");
+
+        return getAndValidateInput(6);
+    }
+
+    public static int showGestisciAsteMenu() throws IOException {
+        printLine();
+        System.out.println("Le aste che sono terminate sono disponibili nella sezione \"Storico delle aste\".");
+
+        System.out.println("1) Aste in corso");
+        System.out.println("2) Aste programmate");
+        printBackOption(3);
+
+        return getAndValidateInput(3);
+    }
+
+    public static void astaForm(Asta asta) throws IOException {
+        crossSeparator();
+        System.out.println("\nInserisci dati per la creazione di una nuova asta");
+        crossSeparator();
+
+        //dimensioni
+        String dimensioni;
+        while (true) {
+            try {
+                dimensioni = getNotEmptyInput("Inserisci le dimensioni dell'oggetto (es. 100x30x40): ");
+
+                //divido l'input in parti (separandole dalla x)
+                String[] parti = dimensioni.trim().toLowerCase().split("x");
+
+                if (parti.length != 3) {
+                    System.out.println("Errore: il formato deve essere esattamente 'LunghezzaxLarghezzaxAltezza' con tre numeri.");
+                    continue;
+                }
+
+                try {
+                    int lunghezza = Integer.parseInt(parti[0].trim());
+                    int larghezza = Integer.parseInt(parti[1].trim());
+                    int altezza = Integer.parseInt(parti[2].trim());
+
+                    if (lunghezza <= 0 || larghezza <= 0 || altezza <= 0) {
+                        System.out.println("Errore: le dimensioni devono essere numeri interi positivi.");
+                        continue;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Errore: inserire solo numeri interi (es. 30x20x15).");
+                }
+
+                break;
+            } catch (IOException e) {
+                System.out.println("Errore: Inserimento delle dimensioni non completato.");
+            }
+        }
+        asta.setDimensioni(dimensioni);
+
+
+        // Data + ora
+        LocalDateTime dateTime;
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        while (true) {
+            try {
+                String dateInput = getNotEmptyInput("Inserisci la data (gg/MM/yyyy): ");
+                String oraInput = getNotEmptyInput("Ora di inizio (0-23): ");
+                String minutiInput = getNotEmptyInput("Minuti di inizio (0-59): ");
+
+                int ora = Integer.parseInt(oraInput.trim());
+                int minuto = Integer.parseInt(minutiInput.trim());
+
+                //effettuo la verifica su ora e minuti
+                if (ora < 0 || ora > 23 || minuto < 0 || minuto > 59) {
+                    System.out.println("Errore: ora o minuti fuori intervallo.");
+                    continue;
+                }
+
+                LocalDate date = LocalDate.parse(dateInput, dateFormatter);
+                LocalTime time = LocalTime.of(ora, minuto);
+
+                dateTime = LocalDateTime.of(date, time);
+
+                if (dateTime.isBefore(LocalDateTime.now())) {
+                    System.out.println("Errore: la data scelta è antecedente alla data odierna.");
+                    continue;
+                }
+                break;
+            } catch (Exception e) {
+                System.out.println("Errore: Assicurati del formato corretto." + e.getMessage());
+            }
+        }
+        asta.setData(dateTime);
+
+        //durata
+        String durata;
+        while (true) {
+            durata = getNotEmptyInput("Inserisci la durata dell'asta in giorni (min 1, max 7): ");
+
+            try {
+                int durataValue = Integer.parseInt(durata);
+                asta.setDurata(durataValue);
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("Errore: Valore non valido. Riprova nuovamente!");
+            }
+        }
+
+        //descrizione
+        String descrizione = getNotEmptyInput("Inserisci una descrizione del prodotto da mettere all'asta: ");
+        asta.setDescrizione(descrizione);
+
+        //prezzo base
+        BigDecimal prezzo = null;
+        while (true) {
+            String prezzoInput = getNotEmptyInput("Inserisci il prezzo base (es. 99.99): ");
+            try {
+                prezzo = new BigDecimal(prezzoInput);
+                if (prezzo.precision() > 7) {
+                    System.out.println("Errore: il prezzo deve avere al massimo 7 cifre totali.");
+                    continue;
+                }
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("Errore: formato del prezzo non valido.");
+            }
+        }
+        asta.setPrezzoBase(prezzo);
+
+        //condizioni articolo
+        System.out.println("Inserisci le condizioni dell'articolo da mettere all'asta.");
+        ArrayList<String> condizioniAmmesse = new ArrayList<>(Arrays.asList(
+                "Nuovo",
+                "Come nuovo",
+                "Ottime condizioni",
+                "Buone condizioni",
+                "Accettabili",
+                "Da riparare"
+        ));
+
+        while (true) {
+            System.out.println("Scegli le condizioni dell'articolo tra le seguenti: ");
+            for (int i = 0; i < condizioniAmmesse.size(); i++) {
+                System.out.printf("  %d. %s%n", i + 1, condizioniAmmesse.get(i));
+            }
+
+            String scelta = getNotEmptyInput("Inserisci il numero corrispondente: ");
+            try {
+                int sceltaIndex = Integer.parseInt(scelta.trim()) - 1;
+
+                if (sceltaIndex >= 0 && sceltaIndex < condizioniAmmesse.size()) {
+                    asta.setCondizioniArticolo(condizioniAmmesse.get(sceltaIndex));
+                    break;
+                } else {
+                    System.out.println("Errore: Scelta non valida. Riprova.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Errore: inserisci un numero valido.");
+            }
+        }
+    }
+
+    public static void selectCategory(Categoria categoria) {
+        //TODO:: da completare
+        //provvisoriamente utilizzo una categoria stub per le prove
+        categoria.setNomeCategoria("Elettronica");
+    }
+
+    public static void dettagliProfiloUtente() throws IOException {
+        crossSeparator();
+        System.out.println("\nDettagli profilo utente");
+        crossSeparator();
+        printLine();
+
+        System.out.println("Username: " + LoggedUser.getUsername());
+        System.out.println("Ruolo: " + LoggedUser.getRole());
+        System.out.println("Nome: " + LoggedUser.getNome());
+        System.out.println("Cognome: " + LoggedUser.getCognome());
+        System.out.println("Codice Fiscale: " + LoggedUser.getCF());
+
+        printLine();
+        printBackOption(1);
+        getAndValidateInput(1);
+    }
+
+    public static int showGestisciCategorieMenu() throws IOException {
+        printLine();
+
+        System.out.println("1) Aggiungi una nuova categoria");
+        System.out.println("2) Modifica categoria esistente");
+        System.out.println("3) Rimuovi categoria");
+        System.out.println("4) Visualizza lista categorie");
+        printBackOption(5);
+
+        return getAndValidateInput(5);
+    }
+
+    public static void aggiungiCatForm(Categoria categoria, Categoria categoriesTree, AdminController controller) throws IOException {
+        crossSeparator();
+        System.out.println("Creazione nuova categoria");
+        crossSeparator();
+
+        //stampo tutte le categorie esistenti
+        System.out.println("\nCategorie esistenti:");
+        printCatTree(categoriesTree, 0);
+        if (categoriesTree.getFigli().isEmpty()) {
+            System.out.println("Verrà creata una categoria di livello 1.");
+            categoria.setLivello(1);
+            categoria.setCategoriaSuperiore(null);
+        }
+
+        //inserisco il nome della nuova categoria
+        String nome = getNotEmptyInput("Inserisci il nome della nuova categoria: ");
+        categoria.setNomeCategoria(nome);
+
+        //inserisco il nome della categoria padre (da lasciare vuoto se vogliamo aggiungere una categoria di livello 1)
+        while(true) {
+
+            String padre = getNotEmptyInput("\nInserisci il nome della categoria padre (lascia vuoto per categoria di livello 1): ");
+
+            if (padre.isBlank()) {
+                categoria.setLivello(1);
+                categoria.setCategoriaSuperiore(null);
+                break;
+
+            } else {
+                Categoria padreScelto = controller.trovaCategoriaPerNome(categoriesTree, padre);
+
+                if (padreScelto == null) {
+                    System.out.println("Categoria padre non trovata. Inserire un nome valido.");
+                    categoria.setNomeCategoria(null);
+                    continue; //provo a chiedere nuovamente il nome del padre
+                }
+
+                int nuovoLivello = padreScelto.getLivello() + 1;
+
+                //TODO:: va scelto se mantenere o meno questo controllo perché teoricamente deve essere delegato ad un trigger specifico nel db
+                /*
+                if (nuovoLivello > 3) {
+                    System.out.println("Non è possibile creare categorie oltre il livello 3.");
+                    categoria.setNomeCategoria(null); // blocco inserimento
+                    return;
+                }
+                */
+
+                categoria.setLivello(nuovoLivello);
+                categoria.setCategoriaSuperiore(padreScelto.getNomeCategoria());
+
+                return;
+            }
+        }
+    }
+
+    public static int showListaCategorie(Categoria catTree) throws IOException {
+        printCatTree(catTree, 0); //utilizzo indent 0 perché voglio stampare dal nodo radice
+
+        printLine();
+        printBackOption(1);
+
+        return getAndValidateInput(1);
+    }
+
+    private static void printCatTree(Categoria catTree, int indent) {
+        if (catTree.getNomeCategoria().equals("Radice") && catTree.getFigli().isEmpty()) {
+            System.out.print("\nNessuna categoria trovata nel database.");
+        }
+
+        if (!catTree.getNomeCategoria().equals("Radice")) {
+            System.out.println("  ".repeat(indent) + indent + " - " + catTree.getNomeCategoria());
+        }
+
+        for (Categoria figlio : catTree.getFigli()) {
+            //funzione ricorsiva per ciascun figlio
+            printCatTree(figlio, indent + 1);
+        }
+    }
+
+
 }

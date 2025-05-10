@@ -1,11 +1,11 @@
 package it.uniroma2.asteonline.model.domain;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class CartaDiCredito {
     private String numeroCarta;
-    private Integer CVV;
-    private Date dataScadenza;
+    private String CVV;
+    private LocalDate dataScadenza;
 
     public CartaDiCredito() {}
 
@@ -17,19 +17,23 @@ public class CartaDiCredito {
         return this.numeroCarta;
     }
 
-    public void setCVV(Integer CVV) {
+    public void setCVV(String CVV) {
         this.CVV = CVV;
     }
 
-    public Integer getCVV() {
+    public String getCVV() {
         return this.CVV;
     }
 
-    public void setDataScadenza(Date dataScadenza) {
+    public void setDataScadenza(LocalDate dataScadenza) {
         this.dataScadenza = dataScadenza;
     }
 
-    public Date getDataScadenza() {
+    public LocalDate getDataScadenza() {
         return this.dataScadenza;
+    }
+
+    public String toFormat() {
+        return numeroCarta + ":" + CVV + ":" + dataScadenza.toString();
     }
 }

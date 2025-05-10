@@ -1,23 +1,20 @@
 package it.uniroma2.asteonline.model.domain;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class UtenteBase extends Utente {
     private String indirizzo;
     private String CAP;
     private String citta;
-    private Date dataNascita;
+    private LocalDate dataNascita;
     private String cittaNascita;
+
     private String cartaCredito;
 
     public UtenteBase() {}
 
     public void setCAP(String CAP) {
         this.CAP = CAP;
-    }
-
-    public void setCartaCredito(String cartaCredito) {
-        this.cartaCredito = cartaCredito;
     }
 
     public void setCitta(String citta) {
@@ -28,7 +25,7 @@ public class UtenteBase extends Utente {
         this.cittaNascita = cittaNascita;
     }
 
-    public void setDataNascita(Date dataNascita) {
+    public void setDataNascita(LocalDate dataNascita) {
         this.dataNascita = dataNascita;
     }
 
@@ -36,16 +33,14 @@ public class UtenteBase extends Utente {
         this.indirizzo = indirizzo;
     }
 
-    public Date getDataNascita() {
+    public void setCartaCredito(String cartaCredito) { this.cartaCredito = cartaCredito; }
+
+    public LocalDate getDataNascita() {
         return this.dataNascita;
     }
 
     public String getCAP() {
         return this.CAP;
-    }
-
-    public String getCartaCredito() {
-        return this.cartaCredito;
     }
 
     public String getCitta() {
@@ -59,5 +54,7 @@ public class UtenteBase extends Utente {
     public String getCittaNascita(){
         return this.cittaNascita;
     }
+
+    public String getCartaCredito(){ return this.cartaCredito; }
 
 }

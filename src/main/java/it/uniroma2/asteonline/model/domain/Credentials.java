@@ -5,11 +5,13 @@ public class Credentials {
     private final String username;
     private final String password;
     private final Role role;
+    private final String cf;
 
-    public Credentials(String username, String password, Role role) {
+    public Credentials(String username, String password, Role role, String cf) {
         this.username = username;
         this.password = password;
         this.role = role;
+        this.cf = cf;
     }
 
     public String getUsername() {
@@ -22,6 +24,10 @@ public class Credentials {
 
     public Role getRole() {
         return role;
+    }
+
+    public String getCF() {
+        return cf;
     }
 
 }
