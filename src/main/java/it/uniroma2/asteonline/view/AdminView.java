@@ -219,9 +219,46 @@ public class AdminView extends CLIView {
         return getAndValidateInput(5);
     }
 
+    public static Categoria modificaCatForm(Categoria oldCat, Categoria categoriesTree, AdminController controller) throws IOException {
+        crossSeparator();
+        System.out.println("\nModifica categoria esistente");
+        crossSeparator();
+
+        if (categoriesTree.getFigli().isEmpty()) {
+            System.out.println("Non ci sono categorie esistenti da modificare");
+            return null;
+        }
+
+        //stampo tutte le categorie esistenti
+        System.out.println("\nCategorie esistenti:");
+        printCatTree(categoriesTree, 0);
+
+        while (true) {
+
+            //inserisco il nome della categoria da modificare
+            String cat = getNotEmptyInput("Inserisci il nome della categoria da modificare: ");
+
+            //cerco la categoria
+            Categoria foundCat = controller.trovaCategoriaPerNome(categoriesTree, cat);
+
+            if (foundCat == null) {
+                System.out.println("Categoria da modificare non trovata. Inserire un nome valido.");
+                continue; //provo a chiedere nuovamente
+            }
+
+            //assegno a oldCat il nome della categoria da modificare
+            oldCat.setNomeCategoria(foundCat.getNomeCategoria());
+
+            //chiedo il nuovo nome da assegnare alla categoria
+            foundCat.setNomeCategoria(getNotEmptyInput("Nuovo nome da assegnare alla categoria scelta: "));
+
+            return foundCat;
+        }
+    }
+
     public static void aggiungiCatForm(Categoria categoria, Categoria categoriesTree, AdminController controller) throws IOException {
         crossSeparator();
-        System.out.println("Creazione nuova categoria");
+        System.out.println("\nCreazione nuova categoria");
         crossSeparator();
 
         //stampo tutte le categorie esistenti
@@ -233,12 +270,14 @@ public class AdminView extends CLIView {
             categoria.setCategoriaSuperiore(null);
         }
 
+        printLine();
+
         //inserisco il nome della nuova categoria
         String nome = getNotEmptyInput("Inserisci il nome della nuova categoria: ");
         categoria.setNomeCategoria(nome);
 
         //inserisco il nome della categoria padre (da lasciare vuoto se vogliamo aggiungere una categoria di livello 1)
-        while(true) {
+        while (true) {
 
             String padre = getNotEmptyInput("\nInserisci il nome della categoria padre (lascia vuoto per categoria di livello 1): ");
 
@@ -297,8 +336,11 @@ public class AdminView extends CLIView {
         crossSeparator();
 
         if (asteTerminate.isEmpty()) {
-            System.out.println("Nessuna asta terminata trovata.");
-            return -1;
+            System.out.println("\nNessuna asta terminata trovata.");
+            printLine();
+            printBackOption(1);
+
+            return getAndValidateInput(1);
         }
 
         printLine();
@@ -317,15 +359,16 @@ public class AdminView extends CLIView {
 
     public static int showDettagliAsta(Asta asta) throws IOException {
         crossSeparator();
-        System.out.println("Dettagli asta #" + asta.getId());
+        System.out.println("\nDettagli asta #" + asta.getId());
         crossSeparator();
 
+        printLine();
         System.out.println("Categoria: " + asta.getCategoria());
         System.out.println("Descrizione: " + asta.getDescrizione());
         System.out.println("Data: " + asta.getData());
-        System.out.println("Durata: " + asta.getDurata() + " ore");
-        System.out.println("Prezzo base: " + asta.getPrezzoBase());
-        System.out.println("Offerta massima: " + asta.getOffertaMassima());
+        System.out.println("Durata: " + asta.getDurata() + (asta.getDurata() == 1 ? " giorno" : " giorni"));
+        System.out.println("Prezzo base: €" + asta.getPrezzoBase());
+        System.out.println("Offerta massima: €" + asta.getOffertaMassima());
         System.out.println("Numero offerte: " + asta.getNumOfferte());
 
         if (asta.getStatoAsta().equals("TERMINATA") && asta.getUtenteBase() != null) {
@@ -334,17 +377,19 @@ public class AdminView extends CLIView {
             System.out.println("Miglior offerente attuale: " + asta.getUtenteBase());
         }
 
+        printLine();
+
         int choice;
         switch (asta.getStatoAsta()) {
             case "TERMINATA" -> {
                 System.out.println("1. Visualizza offerte");
                 printBackOption(2);
-                choice = getAndValidateInput( 2);
+                choice = getAndValidateInput(2);
             }
             case "FUTURA" -> {
                 System.out.println("1. Modifica asta");
                 printBackOption(2);
-                choice = getAndValidateInput( 2);
+                choice = getAndValidateInput(2);
             }
             case "ATTIVA" -> {
                 System.out.println("1. Modifica asta");
@@ -381,5 +426,6 @@ public class AdminView extends CLIView {
                     o.isAutomatica() ? "Sì" : "No");
         }
     }
+
 
 }

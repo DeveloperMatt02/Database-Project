@@ -195,9 +195,49 @@ public class AdminController implements Controller {
            se una categoria rimossa (ed eventualmente i suoi figli) ha delle aste associate, esse vengono riassegnate ad una categoria predefinita di default
          */
 
+        Categoria catDel;
+
+        try {
+            catDel = AdminView.eliminaCatForm(categoriesTree, this);
+
+            if(modifiedCat != null) {
+                //provo a modificare la categoria nel db
+
+                //Eseguo la procedura per memorizzare nel database la nuova categoria
+                System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+                System.out.println(new EliminaCategoriaDAO().execute(catDel));
+                System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+
+                //aggiorno l'albero delle categorie
+                loadCategoriesTree();
+            }
+        } catch (DAOException | IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private void modificaCat() {
+        Categoria modifiedCat;
+        Categoria oldCat = new Categoria();
+
+        try {
+            modifiedCat = AdminView.modificaCatForm(oldCat, categoriesTree, this);
+
+            if(modifiedCat != null) {
+                //provo a modificare la categoria nel db
+
+                //Eseguo la procedura per memorizzare nel database la nuova categoria
+                System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+                System.out.println(new ModificaCategoriaDAO().execute(oldCat, modifiedCat));
+                System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+
+                //aggiorno l'albero delle categorie
+                loadCategoriesTree();
+            }
+        } catch (DAOException | IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
@@ -222,7 +262,7 @@ public class AdminController implements Controller {
     }
 
     private void storicoAste() {
-        List<Asta> asteTerminate = new ArrayList<>();
+        List<Asta> asteTerminate;
 
         try {
             //ottengo tutte le aste terminate
@@ -234,7 +274,7 @@ public class AdminController implements Controller {
                 try {
                     choice = AdminView.showStoricoAste(asteTerminate);
 
-                    if (choice < 1 || choice > asteTerminate.size()) {
+                    if (asteTerminate.isEmpty() || choice > asteTerminate.size()) {
                         //nessuna asta presente nello storico oppure scelto torna indietro
                         break;
                     } else {
@@ -269,7 +309,7 @@ public class AdminController implements Controller {
                 choice = AdminView.showDettagliAsta(selezionata);
 
                 //per uscire dal ciclo while
-                if (choice == maxChoice) {
+                if (choice == maxChoice || choice == -1) {
                     break;
                 }
 
