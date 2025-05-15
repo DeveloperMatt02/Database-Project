@@ -4,39 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="83658782-0224-40ee-a099-c0ba4b1b672e" name="Changes" comment="Commit">
-      <change afterPath="$PROJECT_DIR$/libs/mariadb-java-client-3.5.3.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/db.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/AggiungiCategoriaDAO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/CreaAstaDAO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/GenericProcedureDAO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/GetUserDetailsDAO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/ListaCategorieDAO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/LoginProcedureDAO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/ModificaIndirizzoDAO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/RegistraUtenteDAO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/utils/StatoAsta.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+    <list default="true" id="83658782-0224-40ee-a099-c0ba4b1b672e" name="Changes" comment="Big commit">
+      <change afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/VisualizzaAsteStatoDAO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/VisualizzaOfferteAstaDAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/mariadb-java-client-3.3.1.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/controller/AdminController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/controller/AdminController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/controller/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/controller/LoginController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/controller/MainController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/controller/MainController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/controller/UserController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/factory/ConnectionFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/factory/ConnectionFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/domain/Asta.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/domain/Asta.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/domain/CartaDiCredito.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/domain/CartaDiCredito.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/domain/Categoria.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/domain/Categoria.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/domain/Credentials.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/domain/Credentials.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/domain/Utente.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/domain/Utente.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/domain/UtenteBase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/domain/UtenteBase.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/utils/LoggedUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/utils/LoggedUser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/AggiungiCategoriaDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/AggiungiCategoriaDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/GetUserDetailsDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/GetUserDetailsDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/ListaCategorieDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/ListaCategorieDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/LoginProcedureDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/LoginProcedureDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/ModificaIndirizzoDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/ModificaIndirizzoDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/RegistraUtenteDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/RegistraUtenteDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/domain/Offerta.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/domain/Offerta.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/view/AdminView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/view/AdminView.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/view/CLIView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/view/CLIView.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/view/LoginView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/view/LoginView.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/view/UserView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/view/UserView.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -144,7 +126,9 @@
       <workItem from="1740750691426" duration="5219000" />
       <workItem from="1740760592720" duration="6787000" />
       <workItem from="1745930767464" duration="16370000" />
-      <workItem from="1746450319236" duration="53926000" />
+      <workItem from="1746450319236" duration="54170000" />
+      <workItem from="1746964373121" duration="4655000" />
+      <workItem from="1747060352040" duration="14806000" />
     </task>
     <task id="LOCAL-00001" summary="First commit">
       <option name="closed" value="true" />
@@ -170,7 +154,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740754752121</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Big commit">
+      <option name="closed" value="true" />
+      <created>1746889441793</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1746889441793</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -203,37 +195,14 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="First commit" />
     <MESSAGE value="Commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="Commit" />
+    <MESSAGE value="Big commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="Big commit" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/view/AdminView.java</url>
-          <line>240</line>
-          <option name="timeStamp" value="16" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/view/AdminView.java</url>
-          <line>242</line>
-          <option name="timeStamp" value="17" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/view/AdminView.java</url>
-          <line>248</line>
-          <option name="timeStamp" value="18" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/view/AdminView.java</url>
-          <line>250</line>
-          <option name="timeStamp" value="21" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/controller/AdminController.java</url>
-          <line>221</line>
-          <option name="timeStamp" value="22" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="Application">
+        <watch expression="ConnectionFactory.connection" language="JAVA" custom="it.uniroma2.asteonline.utils.LoggedUser" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>

@@ -1,6 +1,7 @@
 package it.uniroma2.asteonline.factory;
 
 import it.uniroma2.asteonline.model.domain.Role;
+import it.uniroma2.asteonline.utils.LoggedUser;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -10,19 +11,17 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+
 public class ConnectionFactory {
     private static Connection connection;
     private static String connection_url;
     private static String user;
     private static String pass;
 
+
     private ConnectionFactory() {}
 
-
-    /*
-    static {
-        //loadProperties();
-
+    static { //connessione iniziale
         try (InputStream input = new FileInputStream("resources/db.properties")) {
             Properties properties = new Properties();
             properties.load(input);
@@ -39,17 +38,15 @@ public class ConnectionFactory {
 
     }
 
-    */
-
     //carico le proprietà
-    public static void loadProperties() {
+    public static void loadProperties(String type) {
         try (InputStream input = new FileInputStream("resources/db.properties")) {
             Properties properties = new Properties();
             properties.load(input);
 
             connection_url = properties.getProperty("CONNECTION_URL");
-            user = properties.getProperty("LOGIN_USER");
-            pass = properties.getProperty("LOGIN_PASSWORD");
+            user = properties.getProperty(type + "_USER");
+            pass = properties.getProperty(type + "_PASSWORD");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -57,35 +54,21 @@ public class ConnectionFactory {
 
     public static Connection getConnection() throws SQLException {
         if (connection == null || connection.isClosed()) {
-            //carico le proprietà
-            loadProperties();
+            //carico le proprietà per la futura connessione
+            if(LoggedUser.getRole() == null) {
+                loadProperties("LOGIN");
+            } else {
+                switch (LoggedUser.getRole().name()) {
+                    case "USER" -> loadProperties("USER");
+                    case "ADMIN" -> loadProperties("ADMIN");
+                }
+            }
 
             //riapro la connessione dopo il logout
             connection = DriverManager.getConnection(connection_url, user, pass);
         }
 
         return connection;
-    }
-
-    public static void changeRole(Role role) throws SQLException {
-        //prima di cambiare ruolo mi assicuro di chiudere la connessione corrente
-        if (connection != null && !connection.isClosed()) {
-            connection.close();
-        }
-
-        //carico le proprietà con il nuovo ruolo (input)
-        try (InputStream input = new FileInputStream("resources/db.properties")) {
-            Properties properties = new Properties();
-            properties.load(input);
-
-            String connection_url = properties.getProperty("CONNECTION_URL");
-            String user = properties.getProperty(role.name() + "_USER");
-            String pass = properties.getProperty(role.name() + "_PASSWORD");
-
-            connection = DriverManager.getConnection(connection_url, user, pass);
-        } catch (IOException | SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     public static void closeConnection() throws SQLException {

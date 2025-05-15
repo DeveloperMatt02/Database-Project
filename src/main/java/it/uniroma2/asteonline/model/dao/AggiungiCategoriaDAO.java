@@ -19,7 +19,7 @@ public class AggiungiCategoriaDAO implements GenericProcedureDAO<String>{
 
             cs.setString(1, categoria.getNomeCategoria());
             cs.setInt(2, categoria.getLivello());
-            cs.setString(3, categoria.getNomeCategoria());
+            cs.setString(3, categoria.getCategoriaSuperiore());
             cs.execute();
 
         } catch (SQLException e) {

@@ -15,12 +15,6 @@ public class UserController implements Controller {
 
     @Override
     public void start() {
-        try {
-            ConnectionFactory.changeRole(Role.USER);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
         userHomepage();
     }
 

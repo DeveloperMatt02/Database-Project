@@ -2,21 +2,17 @@ package it.uniroma2.asteonline.controller;
 
 import it.uniroma2.asteonline.exception.DAOException;
 import it.uniroma2.asteonline.factory.ConnectionFactory;
-import it.uniroma2.asteonline.model.dao.AggiungiCategoriaDAO;
-import it.uniroma2.asteonline.model.dao.CreaAstaDAO;
-import it.uniroma2.asteonline.model.dao.ListaCategorieDAO;
-import it.uniroma2.asteonline.model.dao.RegistraUtenteDAO;
+import it.uniroma2.asteonline.model.dao.*;
 import it.uniroma2.asteonline.model.domain.Asta;
 import it.uniroma2.asteonline.model.domain.Categoria;
+import it.uniroma2.asteonline.model.domain.Offerta;
 import it.uniroma2.asteonline.model.domain.Role;
 import it.uniroma2.asteonline.utils.LoggedUser;
 import it.uniroma2.asteonline.utils.StatoAsta;
 import it.uniroma2.asteonline.view.AdminView;
-import it.uniroma2.asteonline.view.UserView;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,12 +24,6 @@ public class AdminController implements Controller {
 
     @Override
     public void start() {
-        try {
-            ConnectionFactory.changeRole(Role.ADMIN);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
         //carico la lista delle categorie e creo l'albero
         loadCategoriesTree();
 
@@ -101,7 +91,7 @@ public class AdminController implements Controller {
             setStatoAsta(asta);
 
             //aggiungo la categoria all'asta
-            AdminView.selectCategory(categoria);
+            AdminView.selectCategoryForm(categoria);
 
             //Eseguo la procedura per memorizzare nel database la nuova asta con la categoria associata
             System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
@@ -215,19 +205,120 @@ public class AdminController implements Controller {
         Categoria categoria = new Categoria();
 
         try {
+            //avvio il form di aggiunta di una nuova categoria
             AdminView.aggiungiCatForm(categoria, categoriesTree, this);
 
             //Eseguo la procedura per memorizzare nel database la nuova categoria
             System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
             System.out.println(new AggiungiCategoriaDAO().execute(categoria));
             System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+
+            //aggiorno l'albero delle categorie
+            loadCategoriesTree();
+
         } catch (DAOException | IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     private void storicoAste() {
+        List<Asta> asteTerminate = new ArrayList<>();
+
+        try {
+            //ottengo tutte le aste terminate
+            asteTerminate = new VisualizzaAsteStatoDAO().execute(LoggedUser.getCF(), StatoAsta.TERMINATA);
+
+            //mostro l'elenco delle aste
+            while (true) {
+                int choice;
+                try {
+                    choice = AdminView.showStoricoAste(asteTerminate);
+
+                    if (choice < 1 || choice > asteTerminate.size()) {
+                        //nessuna asta presente nello storico oppure scelto torna indietro
+                        break;
+                    } else {
+                        Asta selezionata = asteTerminate.get(choice - 1);
+
+                        //apro i dettagli dell'asta
+                        dettagliAsta(selezionata);
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+
+        } catch (DAOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    private void dettagliAsta(Asta selezionata) {
+        int choice;
+        int maxChoice = switch (selezionata.getStatoAsta()) {
+            case "ATTIVA" -> 4;    // 3 azioni + 1 "indietro"
+            case "FUTURA", "TERMINATA" -> 2;    // 1 azione + 1 "indietro"
+            default -> 1;
+        };
+
+        try {
+            while (true) {
+                //mostro i dettagli dell'asta selezionata
+                choice = AdminView.showDettagliAsta(selezionata);
+
+                //per uscire dal ciclo while
+                if (choice == maxChoice) {
+                    break;
+                }
+
+                //in base allo stato dell'asta mostro le varie opzioni disponibili
+                switch (selezionata.getStatoAsta()) {
+                    case "TERMINATA" -> {
+                        if (choice == 1) {
+                            offertePerAsta(selezionata.getId());
+                        }
+                    }
+                    case "FUTURA" -> {
+                        if (choice == 1) {
+                            modificaAsta(selezionata.getId());
+                        }
+                    }
+                    case "ATTIVA" -> {
+                        switch (choice) {
+                            case 1 -> modificaAsta(selezionata.getId());
+                            case 2 -> offertePerAsta(selezionata.getId());
+                            case 3 -> chiudiAsta(selezionata.getId());
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void chiudiAsta(int idAsta) {
         //TODO::
+    }
+
+    private void modificaAsta(int idAsta) {
+        //TODO::
+    }
+
+    private void offertePerAsta(int idAsta) {
+        List<Offerta> listaOff;
+
+        try {
+            //recupero dal db le offerte di un'asta
+            listaOff = new VisualizzaOfferteAstaDAO().execute(idAsta);
+
+            AdminView.mostraOffertePerAsta(listaOff);
+        } catch (DAOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private void logout() throws SQLException {
@@ -262,10 +353,6 @@ public class AdminController implements Controller {
         }
 
         return root; //restituisco l'albero delle categorie
-    }
-
-    private void aggiornaAlberoCategorie(Categoria albero) {
-        this.categoriesTree = albero;
     }
 
     public Categoria trovaCategoriaPerNome(Categoria root, String nome) {

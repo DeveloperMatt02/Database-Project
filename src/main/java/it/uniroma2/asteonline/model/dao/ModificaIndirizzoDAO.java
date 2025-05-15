@@ -16,7 +16,8 @@ public class ModificaIndirizzoDAO implements GenericProcedureDAO<Integer>{
         UtenteBase utente = (UtenteBase) params[0];
         int result;
 
-        try (Connection conn = ConnectionFactory.getConnection(); CallableStatement cs = conn.prepareCall("{call aggiorna_indirizzo_consegna(?,?,?,?,?)}")) {
+        try (Connection conn = ConnectionFactory.getConnection();
+             CallableStatement cs = conn.prepareCall("{call aggiorna_indirizzo_consegna(?,?,?,?,?)}")) {
 
             //prendo il codice fiscale per identificare la chiave primaria
             cs.setString(1, LoggedUser.getCF());

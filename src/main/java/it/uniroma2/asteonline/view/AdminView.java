@@ -3,6 +3,7 @@ package it.uniroma2.asteonline.view;
 import it.uniroma2.asteonline.controller.AdminController;
 import it.uniroma2.asteonline.model.domain.Asta;
 import it.uniroma2.asteonline.model.domain.Categoria;
+import it.uniroma2.asteonline.model.domain.Offerta;
 import it.uniroma2.asteonline.utils.LoggedUser;
 
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class AdminView extends CLIView {
     public static int showMenu() throws IOException {
@@ -182,7 +184,7 @@ public class AdminView extends CLIView {
         }
     }
 
-    public static void selectCategory(Categoria categoria) {
+    public static void selectCategoryForm(Categoria categoria) {
         //TODO:: da completare
         //provvisoriamente utilizzo una categoria stub per le prove
         categoria.setNomeCategoria("Elettronica");
@@ -250,20 +252,11 @@ public class AdminView extends CLIView {
 
                 if (padreScelto == null) {
                     System.out.println("Categoria padre non trovata. Inserire un nome valido.");
-                    categoria.setNomeCategoria(null);
+                    categoria.setCategoriaSuperiore(null);
                     continue; //provo a chiedere nuovamente il nome del padre
                 }
 
                 int nuovoLivello = padreScelto.getLivello() + 1;
-
-                //TODO:: va scelto se mantenere o meno questo controllo perché teoricamente deve essere delegato ad un trigger specifico nel db
-                /*
-                if (nuovoLivello > 3) {
-                    System.out.println("Non è possibile creare categorie oltre il livello 3.");
-                    categoria.setNomeCategoria(null); // blocco inserimento
-                    return;
-                }
-                */
 
                 categoria.setLivello(nuovoLivello);
                 categoria.setCategoriaSuperiore(padreScelto.getNomeCategoria());
@@ -297,5 +290,96 @@ public class AdminView extends CLIView {
         }
     }
 
+
+    public static int showStoricoAste(List<Asta> asteTerminate) throws IOException {
+        crossSeparator();
+        System.out.println("\nStorico aste");
+        crossSeparator();
+
+        if (asteTerminate.isEmpty()) {
+            System.out.println("Nessuna asta terminata trovata.");
+            return -1;
+        }
+
+        printLine();
+        System.out.println("Scegli un'asta da visualizzare:");
+        printLine();
+
+        for (int i = 0; i < asteTerminate.size(); i++) {
+            Asta a = asteTerminate.get(i);
+            System.out.printf("%d. Asta #%d - %s - %s\n", i + 1, a.getId(), a.getCategoria(), a.getDescrizione());
+        }
+        System.out.printf("\n%d. Torna indietro\n", asteTerminate.size() + 1);
+
+        return getAndValidateInput(asteTerminate.size() + 1);
+    }
+
+
+    public static int showDettagliAsta(Asta asta) throws IOException {
+        crossSeparator();
+        System.out.println("Dettagli asta #" + asta.getId());
+        crossSeparator();
+
+        System.out.println("Categoria: " + asta.getCategoria());
+        System.out.println("Descrizione: " + asta.getDescrizione());
+        System.out.println("Data: " + asta.getData());
+        System.out.println("Durata: " + asta.getDurata() + " ore");
+        System.out.println("Prezzo base: " + asta.getPrezzoBase());
+        System.out.println("Offerta massima: " + asta.getOffertaMassima());
+        System.out.println("Numero offerte: " + asta.getNumOfferte());
+
+        if (asta.getStatoAsta().equals("TERMINATA") && asta.getUtenteBase() != null) {
+            System.out.println("Vincitore: " + asta.getUtenteBase());
+        } else if (asta.getStatoAsta().equals("ATTIVA") && asta.getUtenteBase() != null) {
+            System.out.println("Miglior offerente attuale: " + asta.getUtenteBase());
+        }
+
+        int choice;
+        switch (asta.getStatoAsta()) {
+            case "TERMINATA" -> {
+                System.out.println("1. Visualizza offerte");
+                printBackOption(2);
+                choice = getAndValidateInput( 2);
+            }
+            case "FUTURA" -> {
+                System.out.println("1. Modifica asta");
+                printBackOption(2);
+                choice = getAndValidateInput( 2);
+            }
+            case "ATTIVA" -> {
+                System.out.println("1. Modifica asta");
+                System.out.println("2. Visualizza offerte");
+                System.out.println("3. Chiudi asta");
+                printBackOption(4);
+                choice = getAndValidateInput(4);
+            }
+            default -> {
+                //non deve verificarsi mai
+                System.out.println("Stato non riconosciuto.");
+                return -1;
+            }
+        }
+        return choice;
+    }
+
+    public static void mostraOffertePerAsta(List<Offerta> offerte) {
+        crossSeparator();
+        System.out.println("Offerte per asta selezionata");
+        crossSeparator();
+
+        if (offerte.isEmpty()) {
+            System.out.println("Nessuna offerta disponibile per questa asta.");
+            return;
+        }
+
+        for (Offerta o : offerte) {
+            System.out.printf("Utente: %s | Data: %s %s | Importo: %.2f | Automatica: %s\n",
+                    o.getUtenteBase(),
+                    o.getData(),
+                    o.getOra(),
+                    o.getImporto(),
+                    o.isAutomatica() ? "Sì" : "No");
+        }
+    }
 
 }

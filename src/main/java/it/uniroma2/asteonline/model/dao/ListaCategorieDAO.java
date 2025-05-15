@@ -17,7 +17,8 @@ public class ListaCategorieDAO implements GenericProcedureDAO<List<Categoria>>{
     public List<Categoria> execute(Object... params) throws DAOException {
         List<Categoria> fullCatList = new ArrayList<>();
 
-        try (Connection conn = ConnectionFactory.getConnection(); CallableStatement cs = conn.prepareCall("{call listaCategorie()}")) {
+        try (Connection conn = ConnectionFactory.getConnection();
+             CallableStatement cs = conn.prepareCall("{call listaCategorie()}")) {
             try (ResultSet rs = cs.executeQuery()) {
                 while (rs.next()) {
                     //costruisco ciascuna categoria ottenuta

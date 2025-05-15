@@ -20,9 +20,9 @@ public class LoginProcedureDAO implements GenericProcedureDAO<Credentials>{
 
         Role loggedRole = null;
 
-        try {
-            Connection conn = ConnectionFactory.getConnection();
-            CallableStatement cs = conn.prepareCall("{call login(?,?,?,?)}");
+        try (Connection conn = ConnectionFactory.getConnection();
+                CallableStatement cs = conn.prepareCall("{call login(?,?,?,?)}");) {
+
             cs.setString(1, username);
             cs.setString(2, password);
             cs.registerOutParameter(3, Types.VARCHAR);

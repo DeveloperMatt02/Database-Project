@@ -13,9 +13,9 @@ public class RegistraUtenteDAO implements GenericProcedureDAO<String>{
         UtenteBase utente = (UtenteBase) params[0];
         CartaDiCredito cartadicredito = (CartaDiCredito) params[1];
 
-        try {
-            Connection conn = ConnectionFactory.getConnection();
-            CallableStatement cs = conn.prepareCall("{call registerUser(?,?,?,?,?,?,?,?,?,?,?,?,?)}");
+        try (Connection conn = ConnectionFactory.getConnection();
+             CallableStatement cs = conn.prepareCall("{call registerUser(?,?,?,?,?,?,?,?,?,?,?,?,?)}");){
+
             cs.setString(1, utente.getUsername());
             cs.setString(2, utente.getPassword());
             cs.setString(3, utente.getCodiceFiscale());

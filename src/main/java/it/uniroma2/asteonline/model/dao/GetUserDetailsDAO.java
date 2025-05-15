@@ -21,7 +21,8 @@ public class GetUserDetailsDAO  implements GenericProcedureDAO<Utente> {
         String cf = (String) params[0];
         Role ruolo = (Role) params[1];
 
-        try (Connection conn = ConnectionFactory.getConnection(); CallableStatement stmt = conn.prepareCall("{call dettagli_utente_cf(?,?)}")) {
+        try (Connection conn = ConnectionFactory.getConnection();
+             CallableStatement stmt = conn.prepareCall("{call dettagli_utente_cf(?,?)}")) {
 
             stmt.setString(1, cf);
             stmt.setString(2, ruolo.name());
