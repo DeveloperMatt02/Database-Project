@@ -33,7 +33,7 @@ public class ListaCategorieDAO implements GenericProcedureDAO<List<Categoria>>{
             }
 
         } catch (SQLException e) {
-            throw new DAOException("Errore " + e.getSQLState() + ": fetch delle categorie fallita a causa del seguente errore. " + e.getMessage());
+            throw new DAOException("Errore " + e.getSQLState() + ": fetch delle categorie fallito a causa del seguente errore. " + e.getMessage());
         }
 
         return fullCatList;

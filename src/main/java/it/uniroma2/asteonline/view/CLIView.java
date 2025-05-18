@@ -1,5 +1,6 @@
 package it.uniroma2.asteonline.view;
 
+import it.uniroma2.asteonline.model.domain.Categoria;
 import it.uniroma2.asteonline.utils.LoggedUser;
 
 import java.io.BufferedReader;
@@ -55,6 +56,21 @@ public class CLIView {
 
     protected static void printBackOption(int optionNumber){
         System.out.println(optionNumber+") Torna indietro");
+    }
+
+    protected static void printCatTree(Categoria catTree, int indent) {
+        if (catTree.getNomeCategoria().equals("Radice") && catTree.getFigli().isEmpty()) {
+            System.out.print("\nNessuna categoria trovata nel database.");
+        }
+
+        if (!catTree.getNomeCategoria().equals("Radice")) {
+            System.out.println("  ".repeat(indent) + indent + " - " + catTree.getNomeCategoria());
+        }
+
+        for (Categoria figlio : catTree.getFigli()) {
+            //funzione ricorsiva per ciascun figlio
+            printCatTree(figlio, indent + 1);
+        }
     }
 
 }

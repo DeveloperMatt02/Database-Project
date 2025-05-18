@@ -3,7 +3,9 @@ package it.uniroma2.asteonline.model.domain;
 import it.uniroma2.asteonline.utils.LoggedUser;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class Asta {
     private int id;
@@ -19,6 +21,13 @@ public class Asta {
     private String categoria;
     private String utenteAmministratore;
     private String utenteBase;
+
+    //campi aggiuntivi
+    private long tempoRimanenteSec;
+    private BigDecimal importoOffertaUtente;
+    private LocalDate dataOffertaUtente;
+    private LocalTime oraOffertaUtente;
+
 
     public Asta() {}
 
@@ -127,6 +136,41 @@ public class Asta {
     public void setUtenteBase(String utenteBase) {
         this.utenteBase = utenteBase;
     }
+
+    //setter e getter aggiuntivi
+
+    public long getTempoRimanenteSec() {
+        return tempoRimanenteSec;
+    }
+
+    public void setTempoRimanenteSec(long tempoRimanenteSec) {
+        this.tempoRimanenteSec = tempoRimanenteSec;
+    }
+
+    public BigDecimal getImportoOffertaUtente() {
+        return importoOffertaUtente;
+    }
+
+    public void setImportoOffertaUtente(BigDecimal importoOffertaUtente) {
+        this.importoOffertaUtente = importoOffertaUtente;
+    }
+
+    public LocalDate getDataOffertaUtente() {
+        return dataOffertaUtente;
+    }
+
+    public void setDataOffertaUtente(LocalDate dataOffertaUtente) {
+        this.dataOffertaUtente = dataOffertaUtente;
+    }
+
+    public LocalTime getOraOffertaUtente() {
+        return oraOffertaUtente;
+    }
+
+    public void setOraOffertaUtente(LocalTime oraOffertaUtente) {
+        this.oraOffertaUtente = oraOffertaUtente;
+    }
+
 
     @Override
     public String toString() {

@@ -21,7 +21,7 @@ public class ModificaCategoriaDAO implements GenericProcedureDAO<String>{
             cs.setString(2, modifiedCat.getNomeCategoria());
             cs.execute();
         } catch (SQLException e) {
-            throw new DAOException("Errore " + e.getSQLState() + ": aggiunta nuova categoria fallita a causa del seguente errore. " + e.getMessage());
+            throw new DAOException("Errore " + e.getSQLState() + ": modifica categoria fallita a causa del seguente errore. " + e.getMessage());
         }
 
 

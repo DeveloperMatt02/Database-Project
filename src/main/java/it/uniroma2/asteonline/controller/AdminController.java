@@ -6,7 +6,6 @@ import it.uniroma2.asteonline.model.dao.*;
 import it.uniroma2.asteonline.model.domain.Asta;
 import it.uniroma2.asteonline.model.domain.Categoria;
 import it.uniroma2.asteonline.model.domain.Offerta;
-import it.uniroma2.asteonline.model.domain.Role;
 import it.uniroma2.asteonline.utils.LoggedUser;
 import it.uniroma2.asteonline.utils.StatoAsta;
 import it.uniroma2.asteonline.view.AdminView;
@@ -14,7 +13,6 @@ import it.uniroma2.asteonline.view.AdminView;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +28,6 @@ public class AdminController implements Controller {
         //avvio la logica principale
         adminHomepage();
     }
-
-
 
     //TODO:: utente amministratore cosa deve fare???
     /*
@@ -78,7 +74,7 @@ public class AdminController implements Controller {
     private void creaAsta() {
         //per creare una nuova asta devono prima essere aggiunte tutte le informazioni sull articolo
         Asta asta = new Asta();
-        Categoria categoria = new Categoria();
+        Categoria categoria;
 
         try {
             //aggiungo tutte le informazioni sull'asta
@@ -91,7 +87,13 @@ public class AdminController implements Controller {
             setStatoAsta(asta);
 
             //aggiungo la categoria all'asta
-            AdminView.selectCategoryForm(categoria);
+            categoria = AdminView.selectCategoryForm(this.categoriesTree, this);
+
+            //chiedo conferma per completare l'aggiunta di una nuova asta
+            boolean valid = AdminView.confermaInizializzazioneAsta(asta, categoria);
+            if (!valid) {
+                return; //l'utente ha scelto di non completare l'inizializzazione dell'asta
+            }
 
             //Eseguo la procedura per memorizzare nel database la nuova asta con la categoria associata
             System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
@@ -189,23 +191,14 @@ public class AdminController implements Controller {
     }
 
     private void rimuoviCat() {
-
-        //TODO::
-        /* se una categoria viene rimossa ed ha figli, tutti i figli vengono rimossi allo stesso modo.
-           se una categoria rimossa (ed eventualmente i suoi figli) ha delle aste associate, esse vengono riassegnate ad una categoria predefinita di default
-         */
-
-        Categoria catDel;
+        String catDelName;
 
         try {
-            catDel = AdminView.eliminaCatForm(categoriesTree, this);
+            catDelName = AdminView.eliminaCatForm(categoriesTree, this);
 
-            if(modifiedCat != null) {
-                //provo a modificare la categoria nel db
-
-                //Eseguo la procedura per memorizzare nel database la nuova categoria
+            if(catDelName != null) {
                 System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-                System.out.println(new EliminaCategoriaDAO().execute(catDel));
+                System.out.println(new EliminaCategoriaDAO().execute(catDelName));
                 System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
 
                 //aggiorno l'albero delle categorie
@@ -226,8 +219,6 @@ public class AdminController implements Controller {
 
             if(modifiedCat != null) {
                 //provo a modificare la categoria nel db
-
-                //Eseguo la procedura per memorizzare nel database la nuova categoria
                 System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
                 System.out.println(new ModificaCategoriaDAO().execute(oldCat, modifiedCat));
                 System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
@@ -298,18 +289,20 @@ public class AdminController implements Controller {
     private void dettagliAsta(Asta selezionata) {
         int choice;
         int maxChoice = switch (selezionata.getStatoAsta()) {
-            case "ATTIVA" -> 4;    // 3 azioni + 1 "indietro"
-            case "FUTURA", "TERMINATA" -> 2;    // 1 azione + 1 "indietro"
+            case "ATTIVA" -> 3;      // 2 azioni + 1 "indietro"
+            case "FUTURA" -> 1;      //1 "indietro
+            case "TERMINATA" -> 2;   // 1 azione + 1 "indietro"
             default -> 1;
         };
 
+        boolean running = true;
         try {
             while (true) {
                 //mostro i dettagli dell'asta selezionata
                 choice = AdminView.showDettagliAsta(selezionata);
 
                 //per uscire dal ciclo while
-                if (choice == maxChoice || choice == -1) {
+                if (choice == maxChoice || choice == -1 || !running) {
                     break;
                 }
 
@@ -322,14 +315,13 @@ public class AdminController implements Controller {
                     }
                     case "FUTURA" -> {
                         if (choice == 1) {
-                            modificaAsta(selezionata.getId());
+                            running = false;
                         }
                     }
                     case "ATTIVA" -> {
                         switch (choice) {
-                            case 1 -> modificaAsta(selezionata.getId());
-                            case 2 -> offertePerAsta(selezionata.getId());
-                            case 3 -> chiudiAsta(selezionata.getId());
+                            case 1 -> offertePerAsta(selezionata.getId());
+                            case 2 -> chiudiAsta(selezionata.getId());
                         }
                     }
                 }
@@ -340,11 +332,13 @@ public class AdminController implements Controller {
     }
 
     private void chiudiAsta(int idAsta) {
-        //TODO::
-    }
-
-    private void modificaAsta(int idAsta) {
-        //TODO::
+        try {
+            System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+            System.out.println(new ChiudiAstaDAO().execute(idAsta));
+            System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+        } catch (DAOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void offertePerAsta(int idAsta) {
