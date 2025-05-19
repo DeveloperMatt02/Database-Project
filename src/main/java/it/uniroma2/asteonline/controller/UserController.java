@@ -9,6 +9,8 @@ import it.uniroma2.asteonline.view.UserView;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -293,8 +295,26 @@ public class UserController implements Controller {
     private void aggiungiOfferta(Asta astaScelta) {
         Offerta offerta = new Offerta();
 
-        //TODO:: aggiungi offerta
-        UserView.showAggiungiOffertaForm(offerta);
+        try {
+            //aggiungo informazioni di base al model offerta
+            offerta.setAsta(astaScelta.getId());
+            offerta.setUtenteBase(LoggedUser.getCF());
+            offerta.setData(LocalDate.now());
+            offerta.setOra(LocalTime.now());
+
+            //input da parte dell'utente base
+            UserView.showAggiungiOffertaForm(offerta);
+
+            System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+            System.out.println(new AggiungiOffertaDAO().execute(
+                    LoggedUser.getCF(), astaScelta.getId(), offerta.getImporto(), offerta.isAutomatica(), offerta.getImportoControfferta()
+            ));
+            System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+        } catch (DAOException e) {
+            System.out.println("Errore: " + e.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

@@ -503,6 +503,43 @@ public class AdminView extends CLIView {
         }
     }
 
+    public static boolean chiediFiltroOfferteAutomatiche() throws IOException {
+        System.out.println("Vuoi visualizzare solo le offerte generate dal sistema di controfferta automatica?");
+        System.out.println("1) Sì");
+        System.out.println("2) No");
+        int scelta = getAndValidateInput(2);
+        return scelta == 1;
+    }
 
 
+    public static int showAsteGeneriche(List<Asta> aste, String titolo) throws IOException {
+        crossSeparator();
+        System.out.println(titolo);
+        crossSeparator();
+        printLine();
+
+        if (aste.isEmpty()) {
+            System.out.println("Nessuna asta disponibile.");
+            return 0;
+        }
+
+        int index = 1;
+        for (Asta a : aste) {
+            if (titolo.equals("Aste programmate")) {
+                System.out.printf("%d. %s | %s | Prezzo base: %.2f | Stato: %s\n",
+                        index++, a.getCategoria(), a.getDescrizione(), a.getPrezzoBase(), a.getStatoAsta());
+            } else {
+                System.out.printf("%d. %s | %s | Prezzo base: %.2f | Offerta max: %.2f | Stato: %s\n",
+                        index++, a.getCategoria(), a.getDescrizione(), a.getPrezzoBase(), a.getOffertaMassima(), a.getStatoAsta());
+            }
+
+        }
+
+        printLine();
+        printBackOption(index);
+        printLine();
+
+        return getAndValidateInput(index);
+
+    }
 }

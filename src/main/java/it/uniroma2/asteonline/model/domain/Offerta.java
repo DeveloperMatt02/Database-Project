@@ -13,14 +13,18 @@ public class Offerta {
     private BigDecimal importo;
     private boolean automatica;
 
+    //importo di controfferta
+    private BigDecimal importoControfferta;
+
     //costruttore
-    public Offerta(String utenteBase, int asta, LocalDate data, LocalTime ora, BigDecimal importo, boolean automatica) {
+    public Offerta(String utenteBase, int asta, LocalDate data, LocalTime ora, BigDecimal importo, boolean automatica, BigDecimal importoControfferta) {
         this.utenteBase = utenteBase;
         this.asta = asta;
         this.data = data;
         this.ora = ora;
         this.importo = importo;
         this.automatica = automatica;
+        this.importoControfferta = importoControfferta;
     }
 
     public Offerta() {
@@ -52,6 +56,10 @@ public class Offerta {
         this.automatica = automatica;
     }
 
+    public void setImportoControfferta(BigDecimal importoControfferta) {
+        this.importoControfferta = importoControfferta;
+    }
+
     //getters
     public String getUtenteBase() {
         return utenteBase;
@@ -77,6 +85,10 @@ public class Offerta {
         return automatica;
     }
 
+    public BigDecimal getImportoControfferta() {
+        return importoControfferta;
+    }
+
     @Override
     public String toString() {
         return "Offerta{" +
@@ -86,6 +98,7 @@ public class Offerta {
                 ", ora=" + this.ora +
                 ", importo=" + this.importo +
                 ", automatica=" + this.automatica +
+                ", importoControfferta=" + this.importoControfferta +
                 '}';
     }
 }

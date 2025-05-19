@@ -9,12 +9,3 @@ public class Main {
         applicationController.start();
     }
 }
-
-//TODO:: utileee
-/*
-
-    FLUSH PRIVILEGES;
-    SHOW GRANTS FOR 'aste_login'@'localhost';
-    GRANT EXECUTE ON PROCEDURE aste.registerUser TO 'aste_login'@'localhost';
-
- */

@@ -21,21 +21,27 @@ public class VisualizzaOfferteAstaDAO implements GenericProcedureDAO<List<Offert
         }
 
         int idAsta = (Integer) params[0];
+        boolean soloAutomatiche = (boolean) params[1];
+
         List<Offerta> off = new ArrayList<>();
 
         try (Connection conn = ConnectionFactory.getConnection();
-             CallableStatement cs = conn.prepareCall("{call visualizza_offerte_asta(?)}")) {
+             CallableStatement cs = conn.prepareCall("{call visualizza_offerte_asta(?, ?)}")) {
 
             cs.setInt(1, idAsta);
+            cs.setBoolean(2, soloAutomatiche);
+
             try (ResultSet rs = cs.executeQuery()) {
                 while(rs.next()) {
                     Offerta o = new Offerta();
 
+                    o.setUtenteBase(rs.getString("UtenteBase"));
                     o.setAsta(rs.getInt("Asta"));
                     o.setData(rs.getDate("Data").toLocalDate());
                     o.setOra(rs.getTime("Ora").toLocalTime());
                     o.setImporto(rs.getBigDecimal("Importo"));
                     o.setAutomatica(rs.getBoolean("Automatica"));
+
                     off.add(o);
                 }
             }

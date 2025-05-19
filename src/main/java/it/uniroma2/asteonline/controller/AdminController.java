@@ -29,17 +29,6 @@ public class AdminController implements Controller {
         adminHomepage();
     }
 
-    //TODO:: utente amministratore cosa deve fare???
-    /*
-        - inserire un nuovo articolo e inizializzare l'asta associata ad esso
-        - visualizzare le aste ancora in corso e gestirne il ciclo di vita (inizializzazione, chiusura anticipata, modifica dei dati dell'asta)
-        - gestione delle categorie
-        - visualizzare lo storico delle aste create dall'utente amministratore con tutte le relative informazioni (incluse le offerte)
-        - fare logout
-
-        N.B. per ogni asta deve essere possibile visualizzare le offerte generate dal sistema di controfferta automatica
-    */
-
     private void adminHomepage() {
         boolean running = true;
         while (running) {
@@ -137,11 +126,51 @@ public class AdminController implements Controller {
     }
 
     private void visualizzaAsteProgrammate() {
-        //TODO::
+        List<Asta> asteFuture;
+
+        try {
+            //recupero prima le aste con StatoAsta == "FUTURA" create dall'admin attualmente loggato
+            asteFuture = new VisualizzaAsteStatoDAO().execute(LoggedUser.getCF(), StatoAsta.FUTURA);
+
+            //mostro l'elenco delle aste future
+            while (true) {
+                int choice = AdminView.showAsteGeneriche(asteFuture, "Aste programmate");
+
+                if (asteFuture.isEmpty() || choice > asteFuture.size()) {
+                    // nessuna asta presente o selezionato "indietro"
+                    break;
+                } else {
+                    Asta selezionata = asteFuture.get(choice - 1);
+                    dettagliAsta(selezionata);
+                }
+            }
+        } catch (DAOException | IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void visualizzaAsteAttive() {
-        //TODO::
+        List<Asta> asteAttive;
+
+        try {
+            // recupera tutte le aste ATTIVA create dall'amministratore loggato
+            asteAttive = new VisualizzaAsteStatoDAO().execute(LoggedUser.getCF(), StatoAsta.ATTIVA);
+
+            // mostro l'elenco delle aste
+            while (true) {
+                int choice = AdminView.showAsteGeneriche(asteAttive, "Aste attive");
+
+                if (asteAttive.isEmpty() || choice > asteAttive.size()) {
+                    // nessuna asta presente o selezionato "indietro"
+                    break;
+                } else {
+                    Asta selezionata = asteAttive.get(choice - 1);
+                    dettagliAsta(selezionata);
+                }
+            }
+        } catch (DAOException | IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void gestisciCategorie() {
@@ -169,7 +198,7 @@ public class AdminController implements Controller {
     private void visualizzaListaCat() {
         try {
             //stampo l'albero delle categorie
-            if(AdminView.showListaCategorie(this.categoriesTree) == 1){
+            if (AdminView.showListaCategorie(this.categoriesTree) == 1) {
                 System.out.println("Torno indietro...");
             }
         } catch (IOException e) {
@@ -196,7 +225,7 @@ public class AdminController implements Controller {
         try {
             catDelName = AdminView.eliminaCatForm(categoriesTree, this);
 
-            if(catDelName != null) {
+            if (catDelName != null) {
                 System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
                 System.out.println(new EliminaCategoriaDAO().execute(catDelName));
                 System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
@@ -217,7 +246,7 @@ public class AdminController implements Controller {
         try {
             modifiedCat = AdminView.modificaCatForm(oldCat, categoriesTree, this);
 
-            if(modifiedCat != null) {
+            if (modifiedCat != null) {
                 //provo a modificare la categoria nel db
                 System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
                 System.out.println(new ModificaCategoriaDAO().execute(oldCat, modifiedCat));
@@ -345,11 +374,13 @@ public class AdminController implements Controller {
         List<Offerta> listaOff;
 
         try {
+            boolean soloAutomatiche = AdminView.chiediFiltroOfferteAutomatiche();
+
             //recupero dal db le offerte di un'asta
-            listaOff = new VisualizzaOfferteAstaDAO().execute(idAsta);
+            listaOff = new VisualizzaOfferteAstaDAO().execute(idAsta, soloAutomatiche);
 
             AdminView.mostraOffertePerAsta(listaOff);
-        } catch (DAOException e) {
+        } catch (DAOException | IOException e) {
             throw new RuntimeException(e);
         }
 
@@ -380,7 +411,7 @@ public class AdminController implements Controller {
             } else {
                 //data una categoria prendo il suo padre, se presente, e aggiungo a esso questa categoria come figlia
                 Categoria padre = catMap.get(c.getCategoriaSuperiore());
-                if(padre != null) {
+                if (padre != null) {
                     padre.addFiglio(c);
                 }
             }

@@ -5,6 +5,7 @@ import it.uniroma2.asteonline.model.domain.*;
 import it.uniroma2.asteonline.utils.LoggedUser;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
@@ -209,8 +210,77 @@ public class UserView extends CLIView{
     }
 
 
-    public static void showAggiungiOffertaForm(Offerta offerta) {
-        //TODO::
+    public static void showAggiungiOffertaForm(Offerta offerta) throws IOException {
+        crossSeparator();
+        System.out.println("Nuova offerta");
+        crossSeparator();
+        printLine();
+
+        //richiedo l'importo dell'offerta
+        double importo;
+        while (true) {
+            String input = getNotEmptyInput("Inserisci importo (in euro, multipli di 0.50): ").replace(',', '.');
+
+            try {
+                importo = Double.parseDouble(input);
+
+                //verifico che sia un multiplo di 0.50
+                if (Math.round(importo * 100) % 50 != 0) {
+                    System.out.println("L'importo deve essere un multiplo di 0,50€.");
+                    continue;
+                }
+
+                if (importo <= 0) {
+                    System.out.println("L'importo deve essere maggiore di zero.");
+                    continue;
+                }
+
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("Inserisci un importo valido");
+            }
+        }
+
+        offerta.setImporto(BigDecimal.valueOf(importo));
+
+        //chiedo se si vuole attivare la controfferta automatica
+        String response = getNotEmptyInput("Vuoi attivare la controfferta automatica? (s/N): ").trim().toLowerCase();
+
+        if (response.equals("s") || response.equals("si")) {
+            offerta.setAutomatica(true);
+
+            double massimo;
+            while (true) {
+                String input = getNotEmptyInput("Inserisci l'importo massimo della controfferta: ").replace(',', '.');
+
+                try {
+                    massimo = Double.parseDouble(input);
+
+                    if (massimo < importo + 0.50) {
+                        System.out.println("L'importo massimo deve essere almeno di 0,50€ superiore all'importo iniziale.");
+                        continue;
+                    }
+
+                    if (Math.round(massimo * 100) % 50 != 0) {
+                        System.out.println("L'importo massimo deve essere un multiplo di 0,50€.");
+                        continue;
+                    }
+
+                    break;
+
+                } catch (NumberFormatException e) {
+                    System.out.println("Inserisci un valore numerico valido.");
+                }
+            }
+
+            offerta.setImportoControfferta(BigDecimal.valueOf(massimo));
+
+        } else {
+            offerta.setAutomatica(false);
+            offerta.setImportoControfferta(null);
+        }
+
+        printLine();
     }
 
     public static int showVisualizzaAsteAttiveMenu() throws IOException {
