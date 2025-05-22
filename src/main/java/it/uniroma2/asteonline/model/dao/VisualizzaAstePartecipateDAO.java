@@ -44,6 +44,8 @@ public class VisualizzaAstePartecipateDAO implements GenericProcedureDAO<List<As
                     pA.setImportoOffertaUtente(rs.getBigDecimal("ImportoUltimaOfferta"));
                     pA.setDataOffertaUtente(rs.getDate("DataUltimaOfferta").toLocalDate());
                     pA.setOraOffertaUtente(rs.getTime("OraUltimaOfferta").toLocalTime());
+                    pA.setAutomatica(rs.getBoolean("ControffertaAttiva"));
+                    pA.setImportoControfferta(rs.getBigDecimal("ImportoControfferta"));
 
                     pAste.add(pA);
                 }

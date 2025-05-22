@@ -22,8 +22,6 @@ public class ChiudiAstaDAO implements GenericProcedureDAO<String>{
             throw new DAOException("Errore " + e.getSQLState() + ": chiusura asta fallita a causa del seguente errore. " + e.getMessage());
         }
 
-
-
         return "\nAsta terminata con successo!";
     }
 }

@@ -3,6 +3,8 @@ package it.uniroma2.asteonline.model.dao;
 import it.uniroma2.asteonline.exception.DAOException;
 import it.uniroma2.asteonline.factory.ConnectionFactory;
 import it.uniroma2.asteonline.model.domain.Asta;
+import it.uniroma2.asteonline.model.domain.Categoria;
+import it.uniroma2.asteonline.model.domain.Utente;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,21 +13,21 @@ import java.util.List;
 public class VisualizzaAsteFiltrateDAO implements GenericProcedureDAO<List<Asta>>{
     @Override
     public List<Asta> execute(Object... params) throws DAOException {
-        String categoria = (String) params[0];
-        String amministratore = (String) params[1];
+        Categoria categoria = (Categoria) params[0];
+        Utente amministratore = (Utente) params[1];
 
         List<Asta> asteAttive = new ArrayList<>();
         try (Connection conn = ConnectionFactory.getConnection();
              CallableStatement cs = conn.prepareCall("{call visualizzaAsteFiltrate(?,?)}")) {
 
             if (categoria != null) {
-                cs.setString(1, categoria);
+                cs.setString(1, categoria.getNomeCategoria());
             } else {
                 cs.setNull(1, Types.VARCHAR);
             }
 
             if (amministratore != null) {
-                cs.setString(2, amministratore);
+                cs.setString(2, amministratore.getCodiceFiscale());
             } else {
                 cs.setNull(2, Types.CHAR);
             }
@@ -46,6 +48,9 @@ public class VisualizzaAsteFiltrateDAO implements GenericProcedureDAO<List<Asta>
                     a.setCategoria(rs.getString("Categoria"));
                     a.setUtenteAmministratore(rs.getString("UtenteAmministratore"));
                     a.setPrezzoBase(rs.getBigDecimal("PrezzoBase"));
+
+                    //aggiungo anche il tempo rimanente alla chiusura dell'asta
+                    a.setTempoRimanenteSec(rs.getLong("TempoRimanenteSec"));
 
                     asteAttive.add(a);
                 }

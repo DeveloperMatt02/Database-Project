@@ -27,6 +27,8 @@ public class Asta {
     private BigDecimal importoOffertaUtente;
     private LocalDate dataOffertaUtente;
     private LocalTime oraOffertaUtente;
+    private boolean isControfferta;
+    private BigDecimal importoControfferta;
 
 
     public Asta() {}
@@ -171,6 +173,21 @@ public class Asta {
         this.oraOffertaUtente = oraOffertaUtente;
     }
 
+    public void setImportoControfferta(BigDecimal importoControfferta) {
+        this.importoControfferta = importoControfferta;
+    }
+
+    public void setAutomatica(boolean controfferta) {
+        isControfferta = controfferta;
+    }
+
+    public boolean isControfferta() {
+        return isControfferta;
+    }
+
+    public BigDecimal getImportoControfferta() {
+        return importoControfferta;
+    }
 
     @Override
     public String toString() {
@@ -186,7 +203,7 @@ public class Asta {
                 .append("Data: ").append(data.toString()).append("\n")
                 .append("Durata: ").append(durata).append(durataText).append("\n")
                 .append("Descrizione: ").append(descrizione).append("\n")
-                .append("Prezzo base: ").append(prezzoBase).append("\n")
+                .append("Prezzo base: €").append(prezzoBase).append("\n")
                 .append("Stato asta: ").append(statoAsta).append("\n")
                 .append("# offerte: ").append(numOfferte).append("\n")
                 .append("Offerta massima: ").append(offertaMassima).append("\n")

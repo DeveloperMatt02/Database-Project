@@ -27,12 +27,14 @@ public class AsteVinteUtenteDAO implements GenericProcedureDAO<List<Asta>>{
                     a.setId(rs.getInt("ID"));
                     a.setDescrizione(rs.getString("Descrizione"));
                     a.setDimensioni(rs.getString("Dimensioni"));
-                    a.setCondizioniArticolo(rs.getString("Condizioni"));
+                    a.setCondizioniArticolo(rs.getString("CondizioniArticolo"));
                     a.setCategoria(rs.getString("Categoria"));
                     a.setPrezzoBase(rs.getBigDecimal("PrezzoBase"));
                     a.setOffertaMassima(rs.getBigDecimal("OffertaMassima"));
                     a.setData(rs.getTimestamp("Data").toLocalDateTime());
                     a.setDurata(rs.getInt("Durata"));
+                    a.setNumOfferte(rs.getInt("NumOfferte"));
+                    a.setUtenteAmministratore(rs.getString("UtenteAmministratore"));
 
                     asteAggiudicate.add(a);
                 }

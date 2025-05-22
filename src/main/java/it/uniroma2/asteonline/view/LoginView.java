@@ -16,9 +16,9 @@ import java.util.regex.Pattern;
 public class LoginView extends CLIView {
 
     public static int chooseLoginOption() throws IOException {
-        System.out.println("1) Login");
-        System.out.println("2) Registrazione");
-        System.out.println("3) Esci");
+        System.out.println("1. Login");
+        System.out.println("2. Registrazione");
+        System.out.println("3. Esci");
         return getAndValidateInput(3);
     }
 

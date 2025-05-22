@@ -16,10 +16,6 @@ public class VisualizzaOfferteAstaDAO implements GenericProcedureDAO<List<Offert
 
     @Override
     public List<Offerta> execute(Object... params) throws DAOException {
-        if (params.length != 1 || !(params[0] instanceof Integer)) {
-            throw new DAOException("Parametri non validi");
-        }
-
         int idAsta = (Integer) params[0];
         boolean soloAutomatiche = (boolean) params[1];
 

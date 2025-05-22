@@ -165,7 +165,9 @@ public class AdminController implements Controller {
                     break;
                 } else {
                     Asta selezionata = asteAttive.get(choice - 1);
-                    dettagliAsta(selezionata);
+                    if(!dettagliAsta(selezionata)){
+                        break;
+                    }
                 }
             }
         } catch (DAOException | IOException e) {
@@ -315,7 +317,7 @@ public class AdminController implements Controller {
 
     }
 
-    private void dettagliAsta(Asta selezionata) {
+    private boolean dettagliAsta(Asta selezionata) {
         int choice;
         int maxChoice = switch (selezionata.getStatoAsta()) {
             case "ATTIVA" -> 3;      // 2 azioni + 1 "indietro"
@@ -327,11 +329,15 @@ public class AdminController implements Controller {
         boolean running = true;
         try {
             while (true) {
+                if(!running) {
+                    break;
+                }
+
                 //mostro i dettagli dell'asta selezionata
                 choice = AdminView.showDettagliAsta(selezionata);
 
                 //per uscire dal ciclo while
-                if (choice == maxChoice || choice == -1 || !running) {
+                if (choice == maxChoice || choice == -1) {
                     break;
                 }
 
@@ -350,7 +356,10 @@ public class AdminController implements Controller {
                     case "ATTIVA" -> {
                         switch (choice) {
                             case 1 -> offertePerAsta(selezionata.getId());
-                            case 2 -> chiudiAsta(selezionata.getId());
+                            case 2 -> {
+                                chiudiAsta(selezionata);
+                                return false;
+                            }
                         }
                     }
                 }
@@ -358,14 +367,21 @@ public class AdminController implements Controller {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        return true;
     }
 
-    private void chiudiAsta(int idAsta) {
+    private void chiudiAsta(Asta asta) {
         try {
+            boolean valid = AdminView.confermaChiusuraAsta(asta);
+            if (!valid) {
+                return; //l'utente ha scelto di non completare la chiusura
+            }
+
             System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-            System.out.println(new ChiudiAstaDAO().execute(idAsta));
+            System.out.println(new ChiudiAstaDAO().execute(asta.getId()));
             System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-        } catch (DAOException e) {
+        } catch (DAOException | IOException e) {
             throw new RuntimeException(e);
         }
     }

@@ -29,6 +29,8 @@ public class AggiungiOffertaDAO implements GenericProcedureDAO<String>{
 
             cs.execute();
 
+
+            System.out.println("Offerta inserita per utente " + offerta.getUtenteBase() + ", asta " + offerta.getAsta());
         } catch (SQLException e) {
             throw new DAOException("Errore " + e.getSQLState() + ": inserimento offerta fallito. " + e.getMessage());
         }

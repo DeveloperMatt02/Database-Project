@@ -8,9 +8,11 @@ import it.uniroma2.asteonline.utils.LoggedUser;
 import it.uniroma2.asteonline.view.UserView;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,22 +68,19 @@ public class UserController implements Controller {
     private void mostraAsteAttive() {
         try {
             List<Asta> asteAttive;
+            //prelevo dal db le aste attive (senza alcun filtro)
+            asteAttive = new VisualizzaAsteFiltrateDAO().execute(null, null);
 
-            while (true) {
-                //prelevo dal db le aste attive (senza alcun filtro)
-                asteAttive = new VisualizzaAsteFiltrateDAO().execute(null, null);
+            int choice = UserView.showAste(asteAttive);
 
-                int choice = UserView.showAste(asteAttive);
-
-                if (choice > asteAttive.size()) {
-                    //l'utente ha scelto di tornare indietro
-                    break;
-                }
-
-                //altrimenti mostro i dettagli di una singola asta
-                Asta astaScelta = asteAttive.get(choice - 1);
-                dettagliAsta(astaScelta);
+            if (choice > asteAttive.size()) {
+                //l'utente ha scelto di tornare indietro
+                return;
             }
+
+            //altrimenti mostro i dettagli di una singola asta
+            Asta astaScelta = asteAttive.get(choice - 1);
+            dettagliAsta(astaScelta);
         } catch (IOException | DAOException e) {
             throw new RuntimeException(e);
         }
@@ -93,24 +92,23 @@ public class UserController implements Controller {
             Categoria filtro;
             List<Asta> asteFiltrate;
 
-            while (true) {
-                //scelgo la categoria filtro
-                filtro = UserView.showFiltraAsteCatMenu(catTree, this);
+            //scelgo la categoria filtro
+            filtro = UserView.showFiltraAsteCatMenu(catTree, this);
 
-                //prelevo dal db le aste con questa categoria filtro
-                asteFiltrate = new VisualizzaAsteFiltrateDAO().execute(filtro, null);
+            //prelevo dal db le aste con questa categoria filtro
+            asteFiltrate = new VisualizzaAsteFiltrateDAO().execute(filtro, null);
 
-                int choice = UserView.showAsteFiltrate(asteFiltrate);
+            int choice = UserView.showAsteFiltrate(asteFiltrate);
 
-                if (choice > asteFiltrate.size()) {
-                    //l'utente ha scelto di tornare indietro
-                    break;
-                }
-
-                //altrimenti mostro i dettagli di una singola asta
-                Asta astaScelta = asteFiltrate.get(choice - 1);
-                dettagliAsta(astaScelta);
+            if (choice > asteFiltrate.size()) {
+                //l'utente ha scelto di tornare indietro
+                return;
             }
+
+            //altrimenti mostro i dettagli di una singola asta
+            Asta astaScelta = asteFiltrate.get(choice - 1);
+            dettagliAsta(astaScelta);
+
         } catch (IOException | DAOException e) {
             throw new RuntimeException(e);
         }
@@ -122,27 +120,27 @@ public class UserController implements Controller {
             List<Asta> asteFiltrate;
             Utente filtro;
 
-            while (true) {
-                //prelevo dal db la lista degli utenti amministratori
-                adminList = new GetAdminListDAO().execute();
 
-                //scelgo l'amministratore da filtrare
-                filtro = UserView.showFiltraAsteAdminMenu(adminList);
+            //prelevo dal db la lista degli utenti amministratori
+            adminList = new GetAdminListDAO().execute();
 
-                //prelevo dal db le aste con questo filtro
-                asteFiltrate = new VisualizzaAsteFiltrateDAO().execute(null, filtro);
+            //scelgo l'amministratore da filtrare
+            filtro = UserView.showFiltraAsteAdminMenu(adminList);
 
-                int choice = UserView.showAsteFiltrate(asteFiltrate);
+            //prelevo dal db le aste con questo filtro
+            asteFiltrate = new VisualizzaAsteFiltrateDAO().execute(null, filtro);
 
-                if (choice > asteFiltrate.size()) {
-                    //l'utente ha scelto di tornare indietro
-                    break;
-                }
+            int choice = UserView.showAsteFiltrate(asteFiltrate);
 
-                //altrimenti mostro i dettagli di una singola asta
-                Asta astaScelta = asteFiltrate.get(choice - 1);
-                dettagliAsta(astaScelta);
+            if (choice > asteFiltrate.size()) {
+                //l'utente ha scelto di tornare indietro
+                return;
             }
+
+            //altrimenti mostro i dettagli di una singola asta
+            Asta astaScelta = asteFiltrate.get(choice - 1);
+            dettagliAsta(astaScelta);
+
         } catch (IOException | DAOException e) {
             throw new RuntimeException(e);
         }
@@ -152,14 +150,10 @@ public class UserController implements Controller {
         int choice;
 
         try {
-            while (true) {
-                choice = UserView.showDettagliAsta(astaScelta);
+            choice = UserView.showDettagliAsta(astaScelta);
 
-                if (choice == 1) {
-                    aggiungiOfferta(astaScelta);
-                } else {
-                    break;
-                }
+            if (choice == 1) {
+                aggiungiOfferta(astaScelta);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -213,7 +207,7 @@ public class UserController implements Controller {
             } else {
                 //data una categoria prendo il suo padre, se presente, e aggiungo a esso questa categoria come figlia
                 Categoria padre = catMap.get(c.getCategoriaSuperiore());
-                if(padre != null) {
+                if (padre != null) {
                     padre.addFiglio(c);
                 }
             }
@@ -230,7 +224,7 @@ public class UserController implements Controller {
             articoliAgg = new AsteVinteUtenteDAO().execute(LoggedUser.getCF());
 
             int choice;
-            while(true) {
+            while (true) {
                 choice = UserView.showArticoliAggiudicati(articoliAgg);
 
                 if (choice > articoliAgg.size()) {
@@ -255,19 +249,16 @@ public class UserController implements Controller {
         try {
             astePartecipate = new VisualizzaAstePartecipateDAO().execute(LoggedUser.getCF());
 
-            int choice;
-            while (true) {
-                choice = UserView.showAstePartecipate(astePartecipate);
+            int choice = UserView.showAstePartecipate(astePartecipate);
 
-                if (choice > astePartecipate.size()) {
-                    //l'utente ha scelto di tornare indietro
-                    break;
-                }
-
-                //altrimenti mostro i dettagli di una singola asta
-                Asta astaScelta = astePartecipate.get(choice - 1);
-                dettagliAstaPartecipata(astaScelta);
+            if (choice > astePartecipate.size()) {
+                //l'utente ha scelto di tornare indietro
+                return;
             }
+
+            //altrimenti mostro i dettagli di una singola asta
+            Asta astaScelta = astePartecipate.get(choice - 1);
+            dettagliAstaPartecipata(astaScelta);
         } catch (IOException | DAOException e) {
             throw new RuntimeException(e);
         }
@@ -277,21 +268,17 @@ public class UserController implements Controller {
         int choice;
 
         try {
-            while (true) {
-                choice = UserView.showDettagliAstaPartecipata(astaScelta);
+            choice = UserView.showDettagliAstaPartecipata(astaScelta);
 
-                if (choice == 1) {
-                    aggiungiOfferta(astaScelta);
-                } else {
-                    break;
-                }
+            if (choice == 1) {
+                aggiungiOfferta(astaScelta);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
+    /*
     private void aggiungiOfferta(Asta astaScelta) {
         Offerta offerta = new Offerta();
 
@@ -306,16 +293,85 @@ public class UserController implements Controller {
             UserView.showAggiungiOffertaForm(offerta);
 
             System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-            System.out.println(new AggiungiOffertaDAO().execute(
-                    LoggedUser.getCF(), astaScelta.getId(), offerta.getImporto(), offerta.isAutomatica(), offerta.getImportoControfferta()
-            ));
+            System.out.println(new AggiungiOffertaDAO().execute(offerta));
             System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+
         } catch (DAOException e) {
             System.out.println("Errore: " + e.getMessage());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
+     */
+
+    private void aggiungiOfferta(Asta astaScelta) {
+        Offerta offertaManuale = new Offerta();
+
+        try {
+            offertaManuale.setAsta(astaScelta.getId());
+            offertaManuale.setUtenteBase(LoggedUser.getCF());
+            offertaManuale.setData(LocalDate.now());
+            offertaManuale.setOra(LocalTime.now());
+
+            UserView.showAggiungiOffertaForm(offertaManuale);
+
+            // 1) Inserisci offerta manuale
+            String risultato = new AggiungiOffertaDAO().execute(offertaManuale);
+            System.out.println(risultato);
+
+            boolean rilanciPossibili = true;
+
+            while (rilanciPossibili) {
+                // 2) Prendi miglior offerta corrente
+                Offerta migliorOfferta = new GetMigliorOffertaDAO().execute(astaScelta.getId());
+
+                // 3) Prendi lista controfferte attive (escludendo miglior offerente)
+                List<Offerta> controfferte = new GetControfferteAttiveDAO()
+                        .execute(astaScelta.getId(), migliorOfferta.getUtenteBase(), migliorOfferta.getImporto());
+
+                if (controfferte.isEmpty()) {
+                    rilanciPossibili = false;
+                } else {
+                    // 4) Prendi controfferta con massimo ImportoControfferta
+                    Offerta rilancio = controfferte.stream()
+                            .max(Comparator.comparing(Offerta::getImportoControfferta))
+                            .orElse(null);
+
+                    if (rilancio == null) {
+                        rilanciPossibili = false;
+                    } else {
+                        BigDecimal incremento = BigDecimal.valueOf(0.50);
+                        BigDecimal nuovoImporto = migliorOfferta.getImporto().add(incremento);
+
+                        // 5) Verifica che il rilancio non superi il limite massimo
+                        if (nuovoImporto.compareTo(rilancio.getImportoControfferta()) > 0) {
+                            rilanciPossibili = false;
+                        } else {
+                            // 6) Inserisci rilancio automatico
+                            Offerta offertaRilancio = new Offerta();
+                            offertaRilancio.setAsta(astaScelta.getId());
+                            offertaRilancio.setUtenteBase(rilancio.getUtenteBase());
+                            offertaRilancio.setImporto(nuovoImporto);
+                            offertaRilancio.setAutomatica(true);
+                            offertaRilancio.setImportoControfferta(rilancio.getImportoControfferta());
+                            offertaRilancio.setData(LocalDate.now());
+                            offertaRilancio.setOra(LocalTime.now());
+
+                            String res = new AggiungiOffertaDAO().execute(offertaRilancio);
+                            System.out.println("Rilancio automatico da " + rilancio.getUtenteBase() + ": " + res);
+                        }
+                    }
+                }
+            }
+
+            System.out.println("Nessun altro rilancio automatico possibile. Asta aggiornata.");
+
+        } catch (DAOException | IOException e) {
+            System.err.println("Errore nel processo di offerta: " + e.getMessage());
+        }
+    }
+
 
 
     private void mostraProfilo() {
@@ -349,7 +405,7 @@ public class UserController implements Controller {
             LoggedUser.setCitta(utente.getCitta());
             LoggedUser.setCap(utente.getCAP());
 
-            if(result == 0) {
+            if (result == 0) {
                 throw new DAOException("Errore: indirizzo di consegna non modificato.");
             }
         } catch (DAOException | IOException e) {

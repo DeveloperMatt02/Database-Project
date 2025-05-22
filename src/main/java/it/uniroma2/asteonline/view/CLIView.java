@@ -55,7 +55,7 @@ public class CLIView {
     }
 
     protected static void printBackOption(int optionNumber){
-        System.out.println(optionNumber+") Torna indietro");
+        System.out.println(optionNumber+". Torna indietro");
     }
 
     protected static void printCatTree(Categoria catTree, int indent) {

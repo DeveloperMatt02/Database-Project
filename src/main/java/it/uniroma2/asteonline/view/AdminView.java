@@ -20,12 +20,12 @@ public class AdminView extends CLIView {
     public static int showMenu() throws IOException {
         CLIView.showHeader();
 
-        System.out.println("1) Inserisci nuovo articolo e inizializza asta");
-        System.out.println("2) Gestisci aste");
-        System.out.println("3) Gestisci categorie");
-        System.out.println("4) Storico delle aste");
-        System.out.println("5) Visualizza profilo utente");
-        System.out.println("6) Logout");
+        System.out.println("1. Inserisci nuovo articolo e inizializza asta");
+        System.out.println("2. Gestisci aste");
+        System.out.println("3. Gestisci categorie");
+        System.out.println("4. Storico delle aste");
+        System.out.println("5. Visualizza profilo utente");
+        System.out.println("6. Logout");
 
         return getAndValidateInput(6);
     }
@@ -34,8 +34,8 @@ public class AdminView extends CLIView {
         printLine();
         System.out.println("Le aste che sono terminate sono disponibili nella sezione \"Storico delle aste\".");
 
-        System.out.println("1) Aste in corso");
-        System.out.println("2) Aste programmate");
+        System.out.println("1. Aste in corso");
+        System.out.println("2. Aste programmate");
         printBackOption(3);
 
         return getAndValidateInput(3);
@@ -208,21 +208,24 @@ public class AdminView extends CLIView {
     }
 
     public static boolean confermaInizializzazioneAsta(Asta asta, Categoria categoria) throws IOException {
+        LocalDateTime dataInizio = asta.getData();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
         crossSeparator();
-        System.out.println("Stai per inizializzare una nuova asta con i seguenti dati:");
+        System.out.println("\nStai per inizializzare una nuova asta con i seguenti dati:");
         crossSeparator();
         printLine();
 
         System.out.println("Descrizione: " + asta.getDescrizione());
         System.out.println("Dimensioni: " + asta.getDimensioni());
-        System.out.println("Prezzo base: " + asta.getPrezzoBase());
+        System.out.println("Prezzo base: €" + asta.getPrezzoBase());
         System.out.println("Durata: " + asta.getDurata() + " giorni");
-        System.out.println("Data inizio: " + asta.getData());
+        System.out.println("Data inizio: " + dataInizio.format(formatter));
         System.out.println("Condizioni articolo: " + asta.getCondizioniArticolo());
         System.out.println("Categoria: " + categoria.getNomeCategoria());
 
         printLine();
-        System.out.println("1) Sì, inizializza l'asta");
+        System.out.println("1. Sì, inizializza l'asta");
         printBackOption(2);
 
         int scelta = getAndValidateInput(2);
@@ -250,10 +253,10 @@ public class AdminView extends CLIView {
     public static int showGestisciCategorieMenu() throws IOException {
         printLine();
 
-        System.out.println("1) Aggiungi una nuova categoria");
-        System.out.println("2) Modifica categoria esistente");
-        System.out.println("3) Rimuovi categoria");
-        System.out.println("4) Visualizza lista categorie");
+        System.out.println("1. Aggiungi una nuova categoria");
+        System.out.println("2. Modifica categoria esistente");
+        System.out.println("3. Rimuovi categoria");
+        System.out.println("4. Visualizza lista categorie");
         printBackOption(5);
 
         return getAndValidateInput(5);
@@ -263,7 +266,6 @@ public class AdminView extends CLIView {
         crossSeparator();
         System.out.println("\nElimina categoria esistente");
         crossSeparator();
-
         printLine();
 
         System.out.println("N.B. Eliminare una categoria con aste assegnate causerà la riassegnazione delle aste sulla categoria \"Default\".");
@@ -306,6 +308,7 @@ public class AdminView extends CLIView {
         crossSeparator();
         System.out.println("\nModifica categoria esistente");
         crossSeparator();
+        printLine();
 
         if (categoriesTree.getFigli().isEmpty()) {
             System.out.println("Non ci sono categorie esistenti da modificare");
@@ -319,7 +322,6 @@ public class AdminView extends CLIView {
         printLine();
 
         while (true) {
-
             //inserisco il nome della categoria da modificare
             String cat = getNotEmptyInput("Inserisci il nome della categoria da modificare: ");
 
@@ -348,6 +350,7 @@ public class AdminView extends CLIView {
         crossSeparator();
         System.out.println("\nCreazione nuova categoria");
         crossSeparator();
+        printLine();
 
         //stampo tutte le categorie esistenti
         System.out.println("\nCategorie esistenti:");
@@ -366,7 +369,6 @@ public class AdminView extends CLIView {
 
         //inserisco il nome della categoria padre (da lasciare vuoto se vogliamo aggiungere una categoria di livello 1)
         while (true) {
-
             String padre = getNotEmptyInput("\nInserisci il nome della categoria padre (lascia vuoto per categoria di livello 1): ");
 
             if (padre.isBlank()) {
@@ -406,6 +408,7 @@ public class AdminView extends CLIView {
         crossSeparator();
         System.out.println("\nStorico aste");
         crossSeparator();
+        printLine();
 
         if (asteTerminate.isEmpty()) {
             System.out.println("\nNessuna asta terminata trovata.");
@@ -430,20 +433,24 @@ public class AdminView extends CLIView {
 
 
     public static int showDettagliAsta(Asta asta) throws IOException {
+        LocalDateTime dataInizio = asta.getData();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
         crossSeparator();
         System.out.println("\nDettagli asta #" + asta.getId());
         crossSeparator();
-
         printLine();
+
         System.out.println("Categoria: " + asta.getCategoria());
         System.out.println("Descrizione: " + asta.getDescrizione());
-        System.out.println("Data: " + asta.getData());
+        System.out.println("Data: " + dataInizio.format(formatter));
         System.out.println("Durata: " + asta.getDurata() + (asta.getDurata() == 1 ? " giorno" : " giorni"));
         System.out.println("Prezzo base: €" + asta.getPrezzoBase());
-        System.out.println("Offerta massima: €" + asta.getOffertaMassima());
-        System.out.println("Numero offerte: " + asta.getNumOfferte());
 
-        printLine();
+        if(asta.getStatoAsta().equals("ATTIVA") || asta.getStatoAsta().equals("TERMINATA")) {
+            System.out.println("Offerta massima: €" + asta.getOffertaMassima());
+            System.out.println("Numero offerte: " + asta.getNumOfferte());
+        }
 
         if (asta.getStatoAsta().equals("TERMINATA") && asta.getUtenteBase() != null) {
             System.out.println("Vincitore: " + asta.getUtenteBase());
@@ -483,30 +490,35 @@ public class AdminView extends CLIView {
         return choice;
     }
 
-    public static void mostraOffertePerAsta(List<Offerta> offerte) {
+    public static int mostraOffertePerAsta(List<Offerta> offerte) throws IOException {
         crossSeparator();
-        System.out.println("Offerte per asta selezionata");
+        System.out.println("\nOfferte per asta selezionata");
         crossSeparator();
+        printLine();
 
         if (offerte.isEmpty()) {
             System.out.println("Nessuna offerta disponibile per questa asta.");
-            return;
+        } else {
+            for (Offerta o : offerte) {
+                System.out.printf("Utente: %s | Data: %s %s | Importo: %.2f | Automatica: %s\n",
+                        o.getUtenteBase(),
+                        o.getData(),
+                        o.getOra(),
+                        o.getImporto(),
+                        o.isAutomatica() ? "Sì" : "No");
+            }
         }
 
-        for (Offerta o : offerte) {
-            System.out.printf("Utente: %s | Data: %s %s | Importo: %.2f | Automatica: %s\n",
-                    o.getUtenteBase(),
-                    o.getData(),
-                    o.getOra(),
-                    o.getImporto(),
-                    o.isAutomatica() ? "Sì" : "No");
-        }
+        printLine();
+        printBackOption(1);
+
+        return getAndValidateInput(1);
     }
 
     public static boolean chiediFiltroOfferteAutomatiche() throws IOException {
         System.out.println("Vuoi visualizzare solo le offerte generate dal sistema di controfferta automatica?");
-        System.out.println("1) Sì");
-        System.out.println("2) No");
+        System.out.println("1. Sì");
+        System.out.println("2. No");
         int scelta = getAndValidateInput(2);
         return scelta == 1;
     }
@@ -514,7 +526,7 @@ public class AdminView extends CLIView {
 
     public static int showAsteGeneriche(List<Asta> aste, String titolo) throws IOException {
         crossSeparator();
-        System.out.println(titolo);
+        System.out.println("\n" + titolo);
         crossSeparator();
         printLine();
 
@@ -526,10 +538,10 @@ public class AdminView extends CLIView {
         int index = 1;
         for (Asta a : aste) {
             if (titolo.equals("Aste programmate")) {
-                System.out.printf("%d. %s | %s | Prezzo base: %.2f | Stato: %s\n",
+                System.out.printf("%d. %s | %s | Prezzo base: €%.2f | Stato: %s\n",
                         index++, a.getCategoria(), a.getDescrizione(), a.getPrezzoBase(), a.getStatoAsta());
             } else {
-                System.out.printf("%d. %s | %s | Prezzo base: %.2f | Offerta max: %.2f | Stato: %s\n",
+                System.out.printf("%d. %s | %s | Prezzo base: €%.2f | Offerta max: %.2f | Stato: %s\n",
                         index++, a.getCategoria(), a.getDescrizione(), a.getPrezzoBase(), a.getOffertaMassima(), a.getStatoAsta());
             }
 
@@ -537,9 +549,33 @@ public class AdminView extends CLIView {
 
         printLine();
         printBackOption(index);
-        printLine();
 
         return getAndValidateInput(index);
 
+    }
+
+    public static boolean confermaChiusuraAsta(Asta asta) throws IOException {
+        LocalDateTime dataInizio = asta.getData();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+        crossSeparator();
+        System.out.println("\nStai per chiudere un'asta con i seguenti dati:");
+        crossSeparator();
+        printLine();
+
+        System.out.println("Descrizione: " + asta.getDescrizione());
+        System.out.println("Dimensioni: " + asta.getDimensioni());
+        System.out.println("Prezzo base: €" + asta.getPrezzoBase());
+        System.out.println("Durata: " + asta.getDurata() + " giorni");
+        System.out.println("Data inizio: " + dataInizio.format(formatter));
+        System.out.println("Condizioni articolo: " + asta.getCondizioniArticolo());
+        System.out.println("Categoria: " + asta.getCategoria());
+
+        printLine();
+        System.out.println("1. Sì, termina l'asta prima della scadenza impostata");
+        printBackOption(2);
+
+        int scelta = getAndValidateInput(2);
+        return scelta == 1;
     }
 }
