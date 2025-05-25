@@ -17,7 +17,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class UserController implements Controller {
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+
     @Override
     public void start() {
         //carico la view
@@ -278,7 +284,7 @@ public class UserController implements Controller {
         }
     }
 
-    /*
+    /* //TODO:: logica vecchia di inserimento offerta (senza controfferta automatica)
     private void aggiungiOfferta(Asta astaScelta) {
         Offerta offerta = new Offerta();
 
@@ -304,6 +310,9 @@ public class UserController implements Controller {
     }
 
      */
+
+
+    /* //TODO:: logica di inserimento di offerta con rilanci automatici a cascata (lato client) -- gestione sincrona e bloccante
 
     private void aggiungiOfferta(Asta astaScelta) {
         Offerta offertaManuale = new Offerta();
@@ -372,6 +381,86 @@ public class UserController implements Controller {
         }
     }
 
+     */
+
+
+    private void aggiungiOfferta(Asta astaScelta) {
+        Offerta offertaManuale = new Offerta();
+
+        try {
+            offertaManuale.setAsta(astaScelta.getId());
+            offertaManuale.setUtenteBase(LoggedUser.getCF());
+            offertaManuale.setData(LocalDate.now());
+            offertaManuale.setOra(LocalTime.now());
+
+            UserView.showAggiungiOffertaForm(offertaManuale);
+
+            //inserisci offerta manuale
+            System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+            System.out.println(new AggiungiOffertaDAO().execute(offertaManuale));
+            System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+
+            //esegui la logica di controfferte in un thread separato per non bloccare l'esecuzione dell'applicazione
+            executor.submit(() -> gestisciRilanciAutomatici(astaScelta));
+
+        } catch (DAOException | IOException e) {
+            System.err.println("Errore nel processo di offerta: " + e.getMessage());
+        }
+    }
+
+    private void gestisciRilanciAutomatici(Asta astaScelta) {
+        final BigDecimal incremento = BigDecimal.valueOf(0.50);
+        final int MAX_RILANCI = 100;
+        int rilanciEffettuati = 0;
+
+        try {
+            while (rilanciEffettuati < MAX_RILANCI) {
+                Offerta migliorOfferta = new GetMigliorOffertaDAO().execute(astaScelta.getId());
+
+                List<Offerta> controfferte = new GetControfferteAttiveDAO()
+                        .execute(astaScelta.getId(), migliorOfferta.getUtenteBase(), migliorOfferta.getImporto());
+
+                if (controfferte.isEmpty()) {
+                    break;
+                }
+
+                Offerta rilancio = controfferte.stream()
+                        .max(Comparator.comparing(Offerta::getImportoControfferta))
+                        .orElse(null);
+
+                if (rilancio == null) {
+                    break;
+                }
+
+                BigDecimal nuovoImporto = migliorOfferta.getImporto().add(incremento);
+
+                if (nuovoImporto.compareTo(rilancio.getImportoControfferta()) > 0) {
+                    break;
+                }
+
+                Offerta offertaRilancio = new Offerta();
+                offertaRilancio.setAsta(astaScelta.getId());
+                offertaRilancio.setUtenteBase(rilancio.getUtenteBase());
+                offertaRilancio.setImporto(nuovoImporto);
+                offertaRilancio.setAutomatica(true);
+                offertaRilancio.setImportoControfferta(rilancio.getImportoControfferta());
+                offertaRilancio.setData(LocalDate.now());
+                offertaRilancio.setOra(LocalTime.now());
+
+                String res = new AggiungiOffertaDAO().execute(offertaRilancio);
+                //System.out.println("Rilancio automatico da " + rilancio.getUtenteBase() + ": " + res);
+
+                rilanciEffettuati++;
+                //Thread.sleep(50);
+            }
+
+            //System.out.println("Rilanci automatici finiti.");
+
+        } catch (DAOException e) {
+            System.err.println("Errore nei rilanci automatici: " + e.getMessage());
+            Thread.currentThread().interrupt();
+        }
+    }
 
 
     private void mostraProfilo() {

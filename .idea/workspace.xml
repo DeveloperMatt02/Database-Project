@@ -5,22 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="83658782-0224-40ee-a099-c0ba4b1b672e" name="Changes" comment="Big commit">
-      <change afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/GetControfferteAttiveDAO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/GetMigliorOffertaDAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/controller/AdminController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/controller/AdminController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/controller/UserController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/AggiungiOffertaDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/AggiungiOffertaDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/AsteVinteUtenteDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/AsteVinteUtenteDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/ChiudiAstaDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/ChiudiAstaDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/VisualizzaAsteFiltrateDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/VisualizzaAsteFiltrateDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/VisualizzaAstePartecipateDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/VisualizzaAstePartecipateDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/VisualizzaOfferteAstaDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/dao/VisualizzaOfferteAstaDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/domain/Asta.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/model/domain/Asta.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/view/AdminView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/view/AdminView.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/view/CLIView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/view/CLIView.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/view/LoginView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/view/LoginView.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/view/UserView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/it/uniroma2/asteonline/view/UserView.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -132,7 +119,7 @@
       <workItem from="1746964373121" duration="4655000" />
       <workItem from="1747060352040" duration="16881000" />
       <workItem from="1747326034784" duration="1514000" />
-      <workItem from="1747332220271" duration="59287000" />
+      <workItem from="1747332220271" duration="65307000" />
     </task>
     <task id="LOCAL-00001" summary="First commit">
       <option name="closed" value="true" />
@@ -198,7 +185,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747666350649</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Big commit">
+      <option name="closed" value="true" />
+      <created>1747908650905</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1747908650905</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
