@@ -40,6 +40,12 @@ public class CLIView {
         return input;
     }
 
+    public static String getInput(String prompt) throws IOException {
+        System.out.print(prompt);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        return reader.readLine().trim();
+    }
+
     protected static void showHeader() {
         crossSeparator();
         System.out.println("\nBenvenuto " + LoggedUser.getUsername() + " (" + LoggedUser.getCF() + ")");

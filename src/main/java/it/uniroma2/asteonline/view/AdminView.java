@@ -375,7 +375,7 @@ public class AdminView extends CLIView {
 
         //inserisco il nome della categoria padre (da lasciare vuoto se vogliamo aggiungere una categoria di livello 1)
         while (true) {
-            String padre = getNotEmptyInput("\nInserisci il nome della categoria padre (lascia vuoto per categoria di livello 1): ");
+            String padre = getInput("\nInserisci il nome della categoria padre (lascia vuoto per categoria di livello 1): ");
 
             if (padre.isBlank()) {
                 categoria.setLivello(1);
