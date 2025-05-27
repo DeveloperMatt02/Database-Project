@@ -278,7 +278,7 @@ public class UserView extends CLIView{
         String response = getNotEmptyInput("Vuoi attivare la controfferta automatica? (s/N): ").trim().toLowerCase();
 
         if (response.equals("s") || response.equals("si")) {
-            offerta.setAutomatica(true);
+            offerta.setAutomatica(false); //l'offerta anche se viene impostato un importo di controfferta automatica rimane comunque manuale
 
             double massimo;
             while (true) {

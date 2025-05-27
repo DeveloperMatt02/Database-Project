@@ -442,7 +442,7 @@ public class UserController implements Controller {
                 offertaRilancio.setAsta(astaScelta.getId());
                 offertaRilancio.setUtenteBase(rilancio.getUtenteBase());
                 offertaRilancio.setImporto(nuovoImporto);
-                offertaRilancio.setAutomatica(true);
+                offertaRilancio.setAutomatica(true); //tutte le offerte generate dal sistema di rilanci sono automatiche
                 offertaRilancio.setImportoControfferta(rilancio.getImportoControfferta());
                 offertaRilancio.setData(LocalDate.now());
                 offertaRilancio.setOra(LocalTime.now());

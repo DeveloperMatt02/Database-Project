@@ -55,5 +55,7 @@ public class Categoria {
         return this.figli;
     }
 
-
+    public boolean isFoglia() {
+        return figli == null || figli.isEmpty();
+    }
 }

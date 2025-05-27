@@ -203,6 +203,12 @@ public class AdminView extends CLIView {
                 continue; //provo a chiedere nuovamente
             }
 
+            //verifico che la categoria scelta sia una foglia dell'albero
+            if (!foundCat.isFoglia()) {
+                System.out.println("Puoi selezionare solo categorie foglia (senza sotto-categorie).");
+                continue;
+            }
+
             return foundCat;
         }
     }

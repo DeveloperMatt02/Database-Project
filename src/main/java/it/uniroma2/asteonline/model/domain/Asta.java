@@ -182,7 +182,7 @@ public class Asta {
     }
 
     public boolean isControfferta() {
-        return isControfferta;
+        return importoControfferta != null;
     }
 
     public BigDecimal getImportoControfferta() {

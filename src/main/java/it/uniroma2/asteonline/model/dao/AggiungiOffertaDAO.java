@@ -21,7 +21,7 @@ public class AggiungiOffertaDAO implements GenericProcedureDAO<String>{
             cs.setInt(2, offerta.getAsta());                              // var_idAsta
             cs.setBigDecimal(3, offerta.getImporto());                    // var_importo
             cs.setBoolean(4, offerta.isAutomatica());                     // var_automatica
-            if (offerta.isAutomatica() && offerta.getImportoControfferta() != null) {
+            if (offerta.getImportoControfferta() != null) {
                 cs.setBigDecimal(5, offerta.getImportoControfferta());    // var_maxControfferta
             } else {
                 cs.setNull(5, java.sql.Types.DECIMAL);
