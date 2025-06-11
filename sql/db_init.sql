@@ -1169,3 +1169,6 @@ INSERT INTO Categoria (Nome, Livello, CategoriaSuperiore) VALUES
 ('Accessori Musicali', 2, 'Musica e Strumenti Musicali');
 
 COMMIT;
+
+
+ALTER TABLE offerta MODIFY COLUMN Ora TIME(6);

@@ -12,14 +12,13 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 public class UserController implements Controller {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -284,105 +283,6 @@ public class UserController implements Controller {
         }
     }
 
-    /* //TODO:: logica vecchia di inserimento offerta (senza controfferta automatica)
-    private void aggiungiOfferta(Asta astaScelta) {
-        Offerta offerta = new Offerta();
-
-        try {
-            //aggiungo informazioni di base al model offerta
-            offerta.setAsta(astaScelta.getId());
-            offerta.setUtenteBase(LoggedUser.getCF());
-            offerta.setData(LocalDate.now());
-            offerta.setOra(LocalTime.now());
-
-            //input da parte dell'utente base
-            UserView.showAggiungiOffertaForm(offerta);
-
-            System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-            System.out.println(new AggiungiOffertaDAO().execute(offerta));
-            System.out.print("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-
-        } catch (DAOException e) {
-            System.out.println("Errore: " + e.getMessage());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-     */
-
-
-    /* //TODO:: logica di inserimento di offerta con rilanci automatici a cascata (lato client) -- gestione sincrona e bloccante
-
-    private void aggiungiOfferta(Asta astaScelta) {
-        Offerta offertaManuale = new Offerta();
-
-        try {
-            offertaManuale.setAsta(astaScelta.getId());
-            offertaManuale.setUtenteBase(LoggedUser.getCF());
-            offertaManuale.setData(LocalDate.now());
-            offertaManuale.setOra(LocalTime.now());
-
-            UserView.showAggiungiOffertaForm(offertaManuale);
-
-            // 1) Inserisci offerta manuale
-            String risultato = new AggiungiOffertaDAO().execute(offertaManuale);
-            System.out.println(risultato);
-
-            boolean rilanciPossibili = true;
-
-            while (rilanciPossibili) {
-                // 2) Prendi miglior offerta corrente
-                Offerta migliorOfferta = new GetMigliorOffertaDAO().execute(astaScelta.getId());
-
-                // 3) Prendi lista controfferte attive (escludendo miglior offerente)
-                List<Offerta> controfferte = new GetControfferteAttiveDAO()
-                        .execute(astaScelta.getId(), migliorOfferta.getUtenteBase(), migliorOfferta.getImporto());
-
-                if (controfferte.isEmpty()) {
-                    rilanciPossibili = false;
-                } else {
-                    // 4) Prendi controfferta con massimo ImportoControfferta
-                    Offerta rilancio = controfferte.stream()
-                            .max(Comparator.comparing(Offerta::getImportoControfferta))
-                            .orElse(null);
-
-                    if (rilancio == null) {
-                        rilanciPossibili = false;
-                    } else {
-                        BigDecimal incremento = BigDecimal.valueOf(0.50);
-                        BigDecimal nuovoImporto = migliorOfferta.getImporto().add(incremento);
-
-                        // 5) Verifica che il rilancio non superi il limite massimo
-                        if (nuovoImporto.compareTo(rilancio.getImportoControfferta()) > 0) {
-                            rilanciPossibili = false;
-                        } else {
-                            // 6) Inserisci rilancio automatico
-                            Offerta offertaRilancio = new Offerta();
-                            offertaRilancio.setAsta(astaScelta.getId());
-                            offertaRilancio.setUtenteBase(rilancio.getUtenteBase());
-                            offertaRilancio.setImporto(nuovoImporto);
-                            offertaRilancio.setAutomatica(true);
-                            offertaRilancio.setImportoControfferta(rilancio.getImportoControfferta());
-                            offertaRilancio.setData(LocalDate.now());
-                            offertaRilancio.setOra(LocalTime.now());
-
-                            String res = new AggiungiOffertaDAO().execute(offertaRilancio);
-                            System.out.println("Rilancio automatico da " + rilancio.getUtenteBase() + ": " + res);
-                        }
-                    }
-                }
-            }
-
-            System.out.println("Nessun altro rilancio automatico possibile. Asta aggiornata.");
-
-        } catch (DAOException | IOException e) {
-            System.err.println("Errore nel processo di offerta: " + e.getMessage());
-        }
-    }
-
-     */
-
 
     private void aggiungiOfferta(Asta astaScelta) {
         Offerta offertaManuale = new Offerta();
@@ -407,6 +307,8 @@ public class UserController implements Controller {
             System.err.println("Errore nel processo di offerta: " + e.getMessage());
         }
     }
+
+    /*
 
     private void gestisciRilanciAutomatici(Asta astaScelta) {
         final BigDecimal incremento = BigDecimal.valueOf(0.50);
@@ -459,6 +361,123 @@ public class UserController implements Controller {
         } catch (DAOException e) {
             System.err.println("Errore nei rilanci automatici: " + e.getMessage());
             Thread.currentThread().interrupt();
+        }
+    }
+
+     */
+
+    private void gestisciRilanciAutomatici(Asta astaScelta) {
+        final BigDecimal incremento = BigDecimal.valueOf(0.50);
+        final int MAX_RILANCI = 150; //per non caricare troppo il sistema
+        final int DELAY_MS = 100; //delay tra ogni rilancio per evitare duplicazioni
+        int rilanciEffettuati = 0;
+
+        //set per tenere traccia degli utenti che hanno già rilanciato in questo ciclo
+        Set<String> utentiRilanciati = new HashSet<>();
+
+        try {
+            while (rilanciEffettuati < MAX_RILANCI) {
+                //delay per evitare conflitti di timestamp
+                Thread.sleep(DELAY_MS);
+
+                //offerta migliore attuale
+                Offerta migliorOfferta = new GetMigliorOffertaDAO().execute(astaScelta.getId());
+
+                //controfferte attive escludendo l'attuale miglior offerente
+                List<Offerta> controfferte = new GetControfferteAttiveDAO()
+                        .execute(astaScelta.getId(), migliorOfferta.getUtenteBase(), migliorOfferta.getImporto());
+
+                if (controfferte.isEmpty()) {
+                    //System.out.println("Nessuna controfferta attiva trovata. Fine rilanci.");
+                    break;
+                }
+
+                //filtra gli utenti che hanno già rilanciato in questo ciclo
+                controfferte = controfferte.stream()
+                        .filter(c -> !utentiRilanciati.contains(c.getUtenteBase()))
+                        .collect(Collectors.toList());
+
+                if (controfferte.isEmpty()) {
+                    //reset del set per il prossimo ciclo
+                    utentiRilanciati.clear();
+                    continue;
+                }
+
+                //trova la controfferta con l'importo massimo
+                Offerta rilancio = controfferte.stream()
+                        .max(Comparator.comparing(Offerta::getImportoControfferta))
+                        .orElse(null);
+
+                if (rilancio == null) {
+                    break;
+                }
+
+                BigDecimal nuovoImporto = migliorOfferta.getImporto().add(incremento);
+
+                //verifico se il nuovo importo supera il massimo della controfferta
+                if (nuovoImporto.compareTo(rilancio.getImportoControfferta()) > 0) {
+                    //System.out.println("Importo " + nuovoImporto + " supera il max controfferta di " + rilancio.getUtenteBase() + " (" + rilancio.getImportoControfferta() + ")");
+                    break;
+                }
+
+                //creo l'offerta di rilancio
+                Offerta offertaRilancio = new Offerta();
+                offertaRilancio.setAsta(astaScelta.getId());
+                offertaRilancio.setUtenteBase(rilancio.getUtenteBase());
+                offertaRilancio.setImporto(nuovoImporto);
+                offertaRilancio.setAutomatica(true);
+                offertaRilancio.setImportoControfferta(rilancio.getImportoControfferta());
+                offertaRilancio.setData(LocalDate.now());
+
+                //imposto l'ora con alta precisione per evitare duplicati
+                LocalTime oraConPrecisione = LocalTime.now();
+                oraConPrecisione = oraConPrecisione.plusNanos(rilanciEffettuati * 100000L);
+                offertaRilancio.setOra(oraConPrecisione);
+
+                //System.out.println("Timestamp offerta: " + offertaRilancio.getData() + " " + oraConPrecisione.format(DateTimeFormatter.ofPattern("HH:mm:ss.SSSSSS")));
+
+                try {
+                    String res = new AggiungiOffertaDAO().execute(offertaRilancio);
+                    //System.out.println("Rilancio automatico #" + (rilanciEffettuati + 1) + " da " + rilancio.getUtenteBase() + " con importo " + nuovoImporto + ": " + res);
+
+                    //aggiungo l'utente al set dei rilanciati
+                    utentiRilanciati.add(rilancio.getUtenteBase());
+
+                } catch (DAOException e) {
+                    if (e.getMessage().contains("Duplicate entry") || e.getMessage().contains("Errore 23000")) {
+                        System.err.println("Offerta duplicata per " + rilancio.getUtenteBase() +
+                                " al timestamp " + oraConPrecisione.format(DateTimeFormatter.ofPattern("HH:mm:ss.SSSSSS")) +
+                                ". Salto questo rilancio.");
+
+                        //aggiungo comunque il rilancio per evitare inconsistenze
+                        utentiRilanciati.add(rilancio.getUtenteBase());
+                        //attendo più tempo prima di rilanciare nuovamente
+                        Thread.sleep(200);
+                        continue;
+                    } else if (e.getMessage().contains("Sei già il miglior offerente")) {
+                        System.out.println(rilancio.getUtenteBase() +
+                                " è già il miglior offerente, passo al prossimo.");
+                        continue;
+                    } else {
+                        throw e;
+                    }
+                }
+
+                rilanciEffettuati++;
+            }
+
+            if (rilanciEffettuati >= MAX_RILANCI) {
+                System.out.println("Raggiunto il limite massimo di rilanci (" + MAX_RILANCI + ")");
+            } else {
+                //System.out.println("Rilanci automatici completati. Totale rilanci: " + rilanciEffettuati);
+            }
+
+        } catch (InterruptedException e) {
+            System.err.println("Thread dei rilanci automatici interrotto");
+            Thread.currentThread().interrupt();
+        } catch (DAOException e) {
+            System.err.println("Errore nei rilanci automatici: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

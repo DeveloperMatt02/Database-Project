@@ -71,6 +71,7 @@ public class AdminView extends CLIView {
                     }
                 } catch (NumberFormatException e) {
                     System.out.println("Errore: inserire solo numeri interi (es. 30x20x15).");
+                    continue;
                 }
 
                 break;
@@ -449,6 +450,8 @@ public class AdminView extends CLIView {
 
         System.out.println("Categoria: " + asta.getCategoria());
         System.out.println("Descrizione: " + asta.getDescrizione());
+        System.out.println("Condizioni articolo: " + asta.getCondizioniArticolo());
+        System.out.println("Dimensioni: " + asta.getDimensioni());
         System.out.println("Data: " + dataInizio.format(formatter));
         System.out.println("Durata: " + asta.getDurata() + (asta.getDurata() == 1 ? " giorno" : " giorni"));
         System.out.println("Prezzo base: €" + asta.getPrezzoBase());
